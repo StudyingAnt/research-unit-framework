@@ -1,0 +1,43 @@
+/* Report typography is separate from manuscript figure typography. */
+@page {
+  size: A4;
+  margin: 15mm 16mm 16mm 16mm;
+  @bottom-right {
+    content: counter(page);
+    font-family: 'Noto Serif', serif;
+    font-size: 8pt;
+    color: #000000;
+  }
+}
+:root { color-scheme: light; }
+html, body { margin: 0; padding: 0; background: #ffffff; color: #111111; }
+body {
+  font-family: 'Noto Serif', serif;
+  font-size: 9pt;
+  line-height: 1.37;
+  max-width: 900px;
+  margin: auto;
+}
+html[lang='ko'] body {
+  font-family: 'Noto Serif KR', 'Noto Serif CJK KR', 'Noto Serif', serif;
+  line-height: 1.45;
+  word-break: keep-all;
+}
+@media screen {
+  body { padding: 24px 28px; }
+}
+h1 { font-size: 14pt; line-height: 1.2; margin: 0 0 8pt; }
+h2 { font-size: 10pt; margin: 10pt 0 4pt; border-bottom: 1px solid #888888; }
+h3 { font-size: 9pt; margin: 8pt 0 3pt; }
+p { margin: 4pt 0 5pt; }
+ul, ol { margin-top: 4pt; margin-bottom: 4pt; padding-left: 18pt; }
+li { margin: 1.4pt 0; }
+table { border-collapse: collapse; width: 100%; font-size: 7.5pt; margin: 5pt 0 7pt; }
+th, td { border: 1px solid #aaaaaa; padding: 3pt 4pt; vertical-align: top; overflow-wrap: anywhere; }
+th { background: #eeeeee; font-weight: 600; }
+code { font-family: 'DejaVu Sans Mono', monospace; font-size: 7.5pt; overflow-wrap: anywhere; }
+pre { white-space: pre-wrap; }
+img { display: block; max-width: 100%; height: auto; margin: 5pt auto; }
+a { color: #1b5278; text-decoration: none; }
+blockquote { margin: 6pt 0 6pt 10pt; border-left: 2px solid #cccccc; padding-left: 8pt; }
+h1, h2, h3, img, tr { break-inside: avoid; }

@@ -1,7 +1,7 @@
 # Framework v1.1 Architecture
 
 **Decision date:** 2026-11-14  
-**Status:** Adopted architecture; Phase 1 documentation only  
+**Status:** Adopted architecture; Phase 2 read-only validation components implemented  
 **Scientific authority:** [Primary specification](RESEARCH_PROGRAM_FRAMEWORK_v1.1.md), with [Korean companion](RESEARCH_PROGRAM_FRAMEWORK_v1.1_ko.md)
 
 This document records the approved architecture. Future paths and operations describe required implementation, not working software. [Ownership and updates](OWNERSHIP_AND_UPDATES.md) is the normative mutation contract; [requirements traceability](REQUIREMENTS_TRACEABILITY.md) identifies later acceptance evidence.
@@ -16,7 +16,7 @@ Separate three contexts:
 | Versioned release | Immutable source revision, starter payload, bundled runtime, file manifest, checksums | Records exactly what can be installed; no dependency on a mutable development checkout |
 | Installed scientific project | Approved scientific records, local instructions/configuration, independent repositories, installed framework receipt | Retains its identity, layout, data, primary systems, Git histories, and scientific ownership |
 
-Resolve the development checkout root from the active workspace. Record its workstation-specific root, protected reference locations, and external policy-manual paths only in the root `DEVELOPMENT_CONTEXT.local.md`, excluded by `.gitignore`. Agents explicitly discover and read it through the root development instructions; it is not assumed to load automatically. Missing local context does not authorize guessing paths or performing dependent operations. Reference trees designated by the researcher or local context remain strictly read-only. Phase 1 creates no compatibility snapshot and installs nothing into those references.
+Resolve the development checkout root from the active workspace. Record its workstation-specific root, protected reference locations, and external policy-manual paths only in the root `DEVELOPMENT_CONTEXT.local.md`, excluded by `.gitignore`. Agents explicitly discover and read it through the root development instructions; it is not assumed to load automatically. Missing local context does not authorize guessing paths or performing dependent operations. Reference trees designated by the researcher or local context remain strictly read-only. Phase 1 created no snapshot; Phase 2 preserves only the reviewed generic legacy baseline in this development repository and installs nothing into the references.
 
 The primary English specification controls scientific and governance semantics. Its Korean companion must remain aligned. Explicit researcher instructions control adopted changes and authorized execution. Architecture approval alone does not authorize later phases, project migration, or publication.
 
@@ -41,7 +41,7 @@ research-unit-framework/
 └── .github/workflows/                # Future verification and artifact builds
 ```
 
-Only the repository README, development instructions, the documented Phase 1 files, and the authorized local-context/ignore-rule follow-up exist at this checkpoint. The local context is checkout-only developer information, not framework installation metadata or release payload. Shared documents and release artifacts contain generic policies without workstation-specific paths or local research project names. Do not create the future directories merely to make the tree look implemented.
+Phase 2 adds the reviewed historical baseline, manifest/path validation source, two structural schemas, and component tests. Remaining paths in this target tree describe later work, not completed tooling. The local context is checkout-only developer information, not framework installation metadata or release payload. Shared documents and release artifacts contain generic policies without workstation-specific paths or local research project names. Do not create remaining future directories merely to make the tree look implemented.
 
 Maintain one editable starter source. A tagged source revision and its verified release archives define a versioned starter; do not maintain independently edited copies for every release. Compatibility snapshots are immutable migration ancestors with recorded provenance, not alternative current starters. Starter v3 is a distribution name; its framework version is v0.5.
 
@@ -158,8 +158,8 @@ Separate specification version `1.1`, future implementation release versions suc
 
 | Phase | Work boundary | Current state |
 |---|---|---|
-| 1 | Architecture, ownership policy, development instructions, specification reconciliation, requirements traceability | Approved; local-context portability follow-up authorized |
-| 2 | Observed legacy baseline, manifests, and path validation | Not started; requires authorization |
+| 1 | Architecture, ownership policy, development instructions, specification reconciliation, requirements traceability | Approved, including the portability follow-up; committed/pushed by the researcher |
+| 2 | Observed legacy baseline, manifests, secure path/file validation, and component tests | Authorized and implemented; see component validation evidence |
 | Later phases | Safe mutation/recovery, initialization, migration, scientific records, reporting, handoffs, release validation | Not started; authorize and validate one phase at a time |
 
-After Phase 1 validation, stop for review. Do not create placeholders for Phase 2 implementation. Approval of the architecture is distinct from authorization for a phase, mutation of an active project, commit, push, tag, or publication.
+After Phase 2 validation, stop for review. The [component contract and test results](MANIFESTS_AND_PATHS.md) state what is actually verified. Do not begin Phase 3 or implement updater, migration, or rollback operations. Approval of the architecture is distinct from authorization for a phase, mutation of an active project, commit, push, tag, or publication.

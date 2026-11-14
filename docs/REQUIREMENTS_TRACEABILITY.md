@@ -1,11 +1,11 @@
 # Framework v1.1 Requirements Traceability
 
 **Date:** 2026-11-14  
-**Checkpoint:** Phase 1 documentation only
+**Checkpoint:** Phase 2 read-only validation components
 
-Sources are the [primary English specification](RESEARCH_PROGRAM_FRAMEWORK_v1.1.md), [Korean companion](RESEARCH_PROGRAM_FRAMEWORK_v1.1_ko.md), the researcher's architecture/migration request and detailed reporting requirements, and the explicit Phase 1 authorization. The [architecture](ARCHITECTURE.md) and [ownership policy](OWNERSHIP_AND_UPDATES.md) record adopted engineering decisions. [Development instructions](../AGENTS.md) enforce the current work boundary.
+Sources are the [primary English specification](RESEARCH_PROGRAM_FRAMEWORK_v1.1.md), [Korean companion](RESEARCH_PROGRAM_FRAMEWORK_v1.1_ko.md), the researcher's architecture/migration request and detailed reporting requirements, and the explicit Phase 1 and Phase 2 authorizations. The [architecture](ARCHITECTURE.md) and [ownership policy](OWNERSHIP_AND_UPDATES.md) record adopted engineering decisions. [Development instructions](../AGENTS.md) enforce the current work boundary.
 
-All requirements below are **specified**, not implemented or runtime-tested in this repository. Validation of documentation does not establish that starter, updater, migration, reporting, or release software works. The v0.5 reference and active project's prior capabilities are evidence for design choices, not an installed v1.1 implementation here.
+All requirements below are specified. Phase 2 implements only the reviewed v0.5 baseline, release manifest definitions/validation, secure path/file inspection, and tests identified below. It does not establish that starter, updater, migration, rollback, reporting, or release-building software works. The reference projects' prior capabilities are not an installed v1.1 implementation here.
 
 ## 1. Scientific and governance requirements
 
@@ -50,7 +50,7 @@ All requirements below are **specified**, not implemented or runtime-tested in t
 | R27 | Backup, interrupted-operation recovery, guarded rollback | Verified affected-set backups, journals, final state recorded last, post-state guards protecting later edits, no recursive project reset |
 | R28 | v0.5 migration without installation metadata | Provenance-recorded observed baseline, conservative unknown-base handling, reviewed ownership adoption, no reorganization or scientific/report regeneration |
 | R29 | Automated verification and release management | Synthetic fixtures and failure tests; archive-based initialization/migration/upgrade checks; manual acceptance boundaries; license/reuse and dependency support verified before related release claims |
-| R30 | Incremental authorization and read-only references | Phase 1 documentation is approved; its authorized portability follow-up adds local context and an ignore rule only. No Phase 2 files or legacy copies, reference-tree mutations, commit, push, tag, or publication; stop for review |
+| R30 | Incremental authorization and read-only references | Phase 1 and portability are approved; Phase 2 authorizes reviewed legacy preservation, manifest/path/file validation, and their tests only. No Phase 3, updater/migration/rollback implementation, reference-tree mutation, commit, push, tag, or publication; stop for review |
 
 ## 4. Phase 1 change boundary and validation
 
@@ -62,7 +62,7 @@ The approved Phase 1 documentation comprises:
 
 The authorized portability follow-up updates development-context references in these shared documents and adds a root `.gitignore` plus `DEVELOPMENT_CONTEXT.local.md`. The latter is checkout-only and Git-excluded. It supplies location facts, not installation metadata or new implementation authorization. Both scientific specifications remain unchanged by this follow-up.
 
-Validation must check:
+The Phase 1 validation checks were:
 
 1. Both specifications preserve all sixteen main sections and align their eleven reporting sections, new reporting subsections, output formats, status/outcome values, governance, and modality coverage.
 2. The old length recommendation is removed and no replacement page target or gate is introduced. Informational page counts and scientific readability remain explicit.
@@ -71,4 +71,16 @@ Validation must check:
 5. Protected reference-tree entry metadata remains unchanged across the phase, and no write-capable reference helper or remote/Git mutation was invoked. Reading reference metadata for preservation checks does not validate their scientific contents.
 6. Scan both tracked files and nonignored untracked files eligible for commit, so an unborn repository cannot pass portability validation vacuously. No workstation-specific path or local research project name may remain in that candidate set. Verify the local context is ignored, untracked, and explicitly discoverable from the root agent instructions.
 
-Use ephemeral documentation checks rather than adding a future implementation test suite in this phase. Report actual validation results and remaining limits to the researcher, then stop. Runtime acceptance evidence is deferred until its implementation phase is explicitly authorized.
+These remain historical Phase 1 evidence, not a prohibition on the subsequently authorized Phase 2 components. Scientific specifications and their requirements remain unchanged in Phase 2.
+
+## 5. Phase 2 implementation and evidence
+
+| Requirement subset | Implemented evidence | Limit |
+|---|---|---|
+| R23, R28: observed legacy source | Exact 22-file baseline, reviewed content, SHA-256/size/mode inventory, pinned manifest digest, integrity test | Unknown historical revision remains null; no migration |
+| R24, R26: release definition and ownership | Versioned strict manifest parser, structural schemas, A managed/D seed roles, root/scientific/generated-state protections | No installation receipts, merge plans, or update engine |
+| R26: secure path/file inspection | Portable canonical names, alias/prefix checks, descriptor-based no-follow reads, single-link regular files, exact bounded inventory/hash/mode checks, observed-change detection | Linux/WSL read-only verification; no archive extraction or future-write safety claim |
+| R29: component tests | Synthetic temporary projects, malformed input and filesystem/race cases, observed baseline integrity, optional independent JSON Schema check | No end-to-end installer/update/migration/rollback, rendering, or release validation |
+| R30: authorization and privacy | Root phase instructions updated; local context remains Git-excluded, protected references read-only, no active-project content copied | Stop after Phase 2; no commit/push or Phase 3 |
+
+See [manifest and path validation](MANIFESTS_AND_PATHS.md) for the format, run command, actual test results, and unresolved limits. The current result is 40 tests, 39 passing and one actual socket-creation test skipped due to sandbox policy; socket-type rejection is separately tested. Later requirements remain specified and unimplemented until their phases are authorized.

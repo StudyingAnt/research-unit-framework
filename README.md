@@ -6,9 +6,9 @@ The framework supports experimental, computational, theoretical, observational, 
 
 ## Current implementation boundary
 
-**Phase 1: architecture, file ownership, development instructions, and bilingual specification alignment.** The overall architecture is approved. Runtime code, starter payloads, installation metadata, migration/update tools, automated test suites, packaging, and releases are not implemented in this repository. Their paths in the architecture are planned paths, not available commands or shipped assets.
+**Phase 2: observed legacy baseline, release manifest definitions/validation, secure path/file validation, and automated tests.** Phase 1 architecture, ownership, and specification alignment are approved. The implemented components are read-only Python primitives, two structural schemas, and an exact reviewed v0.5 snapshot. See [manifest and path validation](docs/MANIFESTS_AND_PATHS.md) for the API, tests, and limits.
 
-Phase 1 is approved; the authorized follow-up makes development context portable. It does not authorize Phase 2, a project migration, Git commits, pushes, tags, or publication. Further implementation requires explicit phase authorization.
+No current v1.1 starter, installed runtime archive, CLI, installer, updater, migration, backup/rollback engine, report builder, CI workflow, or release is implemented. Phase 3, project mutation, Git commits, pushes, tags, and publication remain unauthorized.
 
 ## Documents
 
@@ -19,6 +19,7 @@ Phase 1 is approved; the authorized follow-up makes development context portable
 | [Architecture](docs/ARCHITECTURE.md) | Adopted repository, deployment, scientific-record, and release boundaries |
 | [Ownership and updates](docs/OWNERSHIP_AND_UPDATES.md) | File ownership, conflict handling, migration, backup, and rollback contract |
 | [Requirements traceability](docs/REQUIREMENTS_TRACEABILITY.md) | Requirement sources, future acceptance evidence, and current implementation status |
+| [Manifest and path validation](docs/MANIFESTS_AND_PATHS.md) | Implemented Phase 2 contracts, API, tests, and limitations |
 | [Development instructions](AGENTS.md) | Agent scope, protected references, and phase gates |
 
 ## Checkout-local development context

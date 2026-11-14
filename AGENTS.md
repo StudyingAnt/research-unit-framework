@@ -23,9 +23,11 @@ If the file or a required location is missing, continue independent work within 
 
 ## Current phase authorization
 
-The researcher approved the overall architecture on 2026-11-14 and authorized **Phase 1 only**: finalize architecture and ownership policy, align the bilingual specifications with detailed scientific reporting, remove arbitrary report page-count requirements, and establish development instructions.
+Phase 1 and its portability follow-up are approved, committed, and pushed by the researcher. The current authorization is **Phase 2 only**: preserve the verified v0.5 legacy baseline, define and validate framework release manifests, implement secure path/file validation, add automated tests for those components, and report verified results.
 
-Phase 1 is approved. The current follow-up authorizes portable documentation, a checkout-local development context file, and its Git ignore rule only. Do not create runtime code, schemas, starter payloads, legacy snapshots, packaging, automated test suites, CI workflows, or release artifacts. Do not start Phase 2. Validate the changes, summarize actual changes in Korean, and stop for review. A later explicit phase authorization supersedes this checkpoint; record the new boundary before proceeding.
+Review every legacy file for research-specific or sensitive content before copying it. If the exact baseline contains such information, stop that copying step and report the finding; do not silently redact it and call it exact. Preserve approved generic baseline bytes as inert historical reference only. Never execute its helpers or adopt its superseded policies as current framework requirements.
+
+Do not implement an updater, migration, merge application, backup/rollback engine, project initializer, report builder, release publisher, or CI workflow in this phase. Do not create a current v1.1 starter or release artifact. Tests must use temporary synthetic projects; the preserved legacy snapshot may be read for integrity verification only. Do not proceed to Phase 3. Validate this phase, summarize actual changes, test results, and unresolved issues in Korean, then stop for review. A later explicit phase authorization supersedes this checkpoint; record the new boundary before proceeding.
 
 Do not commit, push, tag, or publish without explicit authorization. Approval of architecture or implementation is not approval to migrate an active project or publish a release.
 
