@@ -12,6 +12,9 @@ challenge weak arguments, missing controls, confounding and unsupported claims;
 offer alternatives. Brainstorming is not approval. Record a formal decision only
 after explicit researcher acceptance, with its date, rationale and uncertainties.
 Do not infer approval from a successful analysis, render or conversation ending.
+During scientific discussion and planning in both Coordination and AST sessions, 
+use the globally installed K-Dense `scientific-critical-thinking` skill when available. 
+Read its `SKILL.md` and apply its guidance to evaluating hypotheses, study designs, assumptions, confounding, and evidence quality. If unavailable, continue without it.
 
 ## Coordination
 
