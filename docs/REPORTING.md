@@ -37,7 +37,9 @@ identify the actual review, rather than inventing a human sign-off.
 Common TeX math is rendered as static SVG using Matplotlib MathText. Unsupported
 commands/environments fail explicitly; this is not a complete TeX engine. Local
 image assets are embedded, and local linked artifacts must exist inside the
-project. Remote links may remain references, but remote images/resources and
+project. Non-image links use metadata inspection only, including independent Git
+source and large inputs; they neither read nor embed scientific payloads. Symlink
+paths remain refused. Remote links may remain references, but remote images/resources and
 active SVG/HTML are not fetched or executed. Required fonts and glyphs fail
 explicitly. Font-family changes must be configured honestly. `preview: true`
 discloses substitutions and writes `report.preview.html/pdf`, separately from

@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.1.2
+
+- Validate non-image scientific hyperlinks through no-follow metadata inspection,
+  allowing independent Git source references and large inputs without reading or
+  copying their contents. Managed update/write restrictions remain unchanged.
+- Add symlink refusal and real bilingual-rendering regression cases.
+
 ## 1.1.1
 
 - Resolve project-relative configured font files against the selected project in

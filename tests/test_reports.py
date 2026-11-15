@@ -47,6 +47,15 @@ class ReportTests(unittest.TestCase):
         for data in (b'<svg onload="alert(1)"/>', b'<svg><image href="https://invalid.example/image"/></svg>', b'<!ENTITY x "bad"><svg/>'):
             with self.assertRaises(ValidationError): _safe_svg(data)
 
+    def test_link_metadata_rejects_symlink_without_reading_large_files(self):
+        from research_program_framework.reports import _link_identity
+        repo = self.project / 'repos/synthetic-source'; (repo / '.git').mkdir(parents=True)
+        target = repo / 'large.bin'
+        with target.open('wb') as handle: handle.truncate(128 * 1024 * 1024)
+        self.assertIsNotNone(_link_identity(self.project, 'repos/synthetic-source/large.bin'))
+        (repo / 'alias.bin').symlink_to(target)
+        with self.assertRaises(ValidationError): _link_identity(self.project, 'repos/synthetic-source/alias.bin')
+
 
 @unittest.skipUnless(os.environ.get('RPF_RENDER_TESTS') == '1', 'Optional renderer acceptance requires an explicitly selected environment/fonts')
 class RenderingTests(ReportTests):
@@ -105,6 +114,19 @@ class RenderingTests(ReportTests):
         with Image.open(path) as image: image.save(path.with_name('low.png'), dpi=(72,72))
         path.write_bytes(path.with_name('low.png').read_bytes())
         with self.assertRaises(ValidationError): validate_report(self.project, UNIT_ID)
+
+    def test_independent_git_source_and_large_input_links_are_metadata_only(self):
+        repo = self.project / 'repos/synthetic-source'; (repo / '.git').mkdir(parents=True)
+        (repo / '.git/HEAD').write_text('ref: refs/heads/synthetic\n')
+        (repo / 'analysis.py').write_text('# Synthetic source reference; not executed.\n')
+        data = self.project / 'data/large-synthetic.bin'
+        with data.open('wb') as handle: handle.truncate(128 * 1024 * 1024)
+        for lang in ('en', 'ko'):
+            path = self.reports / lang / 'report.md'
+            path.write_text(path.read_text() + '\n[Illustrative source, not executed](../../../repos/synthetic-source/analysis.py)\n\n[Unexamined synthetic input reference](../../../data/large-synthetic.bin)\n')
+        result = render_report(self.project, UNIT_ID, 'REV001')
+        self.assertEqual(len(result['files']), 6)
+        self.assertEqual((repo / '.git/HEAD').read_text(), 'ref: refs/heads/synthetic\n')
 
     def test_interrupted_build_can_be_recovered_without_later_work(self):
         from research_program_framework.reports import report_recovery_plan, recover_report

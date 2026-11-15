@@ -4,10 +4,11 @@ This implementation supports researcher-directed life-science program records,
 Detailed EN/KO reporting and guarded framework administration. The scientific
 specification is v1.1; the implementation and JSON schema versions are separate.
 
-Implementation 1.1.1 corrects font-presence diagnostics for project-relative
-configured paths when invoked outside the project. Rendering, scientific
-requirements and safe administration remain unchanged from 1.1.0. The published
-1.1.0 tag and artifacts are retained.
+Implementation 1.1.2 permits no-follow, metadata-only scientific hyperlinks to
+independent local Git source and large inputs without reading their contents.
+It retains the 1.1.1 project-relative font diagnostics correction. Scientific
+requirements and managed write safeguards remain unchanged; earlier published
+tags and artifacts are retained.
 
 Download the release archive and its SHA-256 file. Verify the checksum before
 extracting the trusted archive, inspect `SHA256SUMS`, and keep the release

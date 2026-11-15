@@ -118,7 +118,7 @@ CSS pixels. All external browser requests were blocked. The browser and its
 temporary profile were isolated under temporary storage; no research environment
 or Windows configuration was changed.
 
-The implementation version is 1.1.1. The published 1.1.0 archive was downloaded
+The implementation version is 1.1.2. The published 1.1.0 archive was downloaded
 again: all 47 payload checksum records passed, its 68-entry archive passed public
 inspection, its bytes matched the local clean build, and its standalone wrapper
 initialized and inspected a project without the development checkout. This
@@ -126,7 +126,15 @@ additional review reproduced a diagnostics-only bug for project-relative font
 paths. Version 1.1.1 fixes the lookup without changing rendering/scientific scope;
 the added regression brings the complete suite to 156 tests. The preceding
 155-test results above remain historical evidence, not a claim that the new test
-ran in that earlier checkpoint. Verify final results and publication from the Git tag,
+ran in that earlier checkpoint. The 1.1.1 full renderer-enabled run passed 155
+of 156 tests with one sandbox socket skip; its standalone relative-font rendering
+also passed. A subsequent independent-source/large-input hyperlink regression
+reproduced an overly strict reuse of update-path reads. Version 1.1.2 separates
+non-image link metadata checks, retaining no-follow and stale-reference guards
+without reading scientific contents or weakening update writes. Its additional
+core/rendering cases bring the suite to 159 tests. The complete renderer-enabled
+1.1.2 run passed 158, with only sandbox-restricted socket creation skipped.
+Verify publication from the actual Git tag,
 GitHub workflow and release assets. Record real-target deployment separately in
 checkout-local context; this generic acceptance record does not claim that an
 active scientific project has been migrated. No private target details enter it.

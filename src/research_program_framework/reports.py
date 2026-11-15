@@ -12,6 +12,7 @@ import os
 from pathlib import Path
 import re
 import subprocess
+import stat
 import tempfile
 import uuid
 
@@ -197,16 +198,34 @@ def _asset(store, root, lang, location, image):
     path = Path(os.path.normpath(str(Path(root) / lang / unquote(parsed.path))))
     relative = path.as_posix()
     validate_relative_path(relative)
+    if not image:
+        # A provenance hyperlink is not an image to embed or a managed update
+        # target. Inspect metadata without reading potentially large/restricted
+        # scientific contents, including source in independent Git checkouts.
+        store.report_links[relative] = _link_identity(store.root, relative)
+        return location
     snapshot = store.read(relative)
     if snapshot.data is None: raise ValidationError('Referenced local report artifact is missing: ' + relative)
     store.report_references[relative] = snapshot
-    if not image: return location
     store.report_images.add(relative)
     suffix = path.suffix.lower()
     if suffix == '.svg': _safe_svg(snapshot.data)
     mime = {'.png': 'image/png', '.svg': 'image/svg+xml', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg'}.get(suffix)
     if mime is None: raise ValidationError('Unsupported embedded image format; PDF figures need a display export')
     return 'data:' + mime + ';base64,' + base64.b64encode(snapshot.data).decode()
+
+
+def _link_identity(root, relative):
+    from .paths import _open_root, _open_parent, _signature
+    from .storage import identity
+    try:
+        with _open_root(root) as fd, _open_parent(fd, relative) as (parent, name):
+            info = os.stat(name, dir_fd=parent, follow_symlinks=False)
+            if not (stat.S_ISREG(info.st_mode) or stat.S_ISDIR(info.st_mode)):
+                raise ValidationError('Local scientific links must reference existing regular files or directories')
+            return identity(os.fstat(fd)), identity(os.fstat(parent)), _signature(info)
+    except OSError as exc:
+        raise ValidationError('Referenced local scientific artifact is missing or unsafe: ' + relative) from exc
 
 
 def _transform(value, store, root, lang, equations):
@@ -257,7 +276,7 @@ def render_report(project, unit, revision):
     checked = validate_report(project, unit)
     if checked['metadata']['revision'] != revision: raise ValidationError('Source and requested report revision differ')
     with Store(project) as store:
-        store.report_references = {}; store.report_images = set()
+        store.report_references = {}; store.report_images = set(); store.report_links = {}
         store.report_widths = {f['path']: f['declared']['width_mm'] for f in checked['figures']}
         config = dict(configuration(store)['reporting']); root = checked['root']
         for lang in ('en', 'ko'):
@@ -313,6 +332,7 @@ def render_report(project, unit, revision):
         if not store.report_images <= {f['path'] for f in checked['figures']}:
             raise ValidationError('Every displayed scientific image requires figure display/provenance metadata')
         checked['references'] = store.report_references
+        checked['links'] = store.report_links
         receipt, checked['installation_snapshot'] = read_receipt(store)
         rendered = {'schema_version': 1, 'unit_id': checked['metadata']['unit_id'], 'revision': revision,
             'preview': bool(preview), 'page_counts_informational': pages, 'fonts': fonts,
@@ -336,6 +356,9 @@ def _publish(project, checked, css_snapshot, documents, rendered):
         store.check('framework-project.json', checked['config_snapshot'])
         store.check('.research-framework/installation.json', checked['installation_snapshot'])
         for path, snapshot in checked['references'].items(): store.check(path, snapshot)
+        for path, token in checked['links'].items():
+            if _link_identity(store.root, path) != token:
+                raise ValidationError('Referenced scientific artifact changed during rendering')
         for figure in checked['figures']:
             if store.read(figure['path']).fingerprint() != {k: figure[k] for k in ('size', 'sha256', 'mode')}:
                 raise ValidationError('Figure changed during rendering')
