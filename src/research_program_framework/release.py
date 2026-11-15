@@ -3,14 +3,15 @@
 import base64
 import hashlib
 import io
+import gzip
 import json
 from pathlib import Path
 import subprocess
 import tarfile
 import zipfile
 
-from .manifests import validate_release_manifest, verify_release
-from .paths import ValidationError, validate_path_set
+from .manifests import validate_release_manifest, verify_release, load_legacy_baseline
+from .paths import ValidationError, validate_path_set, validate_payload, read_payload_file, FileFingerprint
 from .updates import encode, manifest_dict
 
 
@@ -21,19 +22,21 @@ def fingerprint(data, mode='0644'):
 def source_bundle(root):
     root = Path(root)
     ownership = json.loads((root / 'starter/ownership.json').read_text())
-    files = {p.relative_to(root / 'starter/payload').as_posix(): p.read_bytes()
+    files = {p.relative_to(root / 'starter/payload').as_posix(): read_payload_file(root / 'starter/payload', p.relative_to(root / 'starter/payload').as_posix())
              for p in (root / 'starter/payload').rglob('*') if p.is_file()}
     if set(files) != set(ownership):
         raise ValidationError('Starter ownership must cover exactly the editable payload')
     validate_path_set(files)
+    validate_payload(root / 'starter/payload', tuple(FileFingerprint(path=p, **fingerprint(data)) for p, data in sorted(files.items())))
     legacy = root / 'compatibility/v0.5/starter-v3'
+    ancestor = load_legacy_baseline(legacy / 'manifest.json')
+    validate_payload(legacy / 'payload', ancestor.files)
     return {'version': (root / 'VERSION').read_text().strip(),
             'source_revision': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=root, text=True).strip(),
             'files': {p: base64.b64encode(data).decode() for p, data in sorted(files.items())},
             'ownership': ownership,
             'legacy_manifest': json.loads((legacy / 'manifest.json').read_text()),
-            'legacy_files': {p.relative_to(legacy / 'payload').as_posix(): base64.b64encode(p.read_bytes()).decode()
-                             for p in (legacy / 'payload').rglob('*') if p.is_file()}}
+            'legacy_files': {f.path: base64.b64encode(read_payload_file(legacy / 'payload', f.path)).decode() for f in ancestor.files}}
 
 
 def runtime(root, bundle):
@@ -74,12 +77,14 @@ def materialize(bundle, runtime_bytes, destination):
     return release
 
 
-def build(root, destination):
+def build(root, destination, require_clean=False):
     """Build an independently usable directory and reproducible tar archive.
 
     Source revision identifies the checked-out commit; a dirty-source build is
     a development artifact and must never be presented as a tagged release.
     """
+    if require_clean and subprocess.check_output(['git', 'status', '--porcelain'], cwd=root):
+        raise ValidationError('Published release artifacts require a clean source checkout')
     bundle = source_bundle(root)
     release = materialize(bundle, runtime(root, bundle), destination)
     destination = Path(destination)
@@ -92,7 +97,13 @@ def build(root, destination):
     checksums = ''.join(hashlib.sha256(p.read_bytes()).hexdigest() + '  ' + p.relative_to(destination).as_posix() + '\n'
                         for p in sorted(destination.rglob('*')) if p.is_file())
     (destination / 'SHA256SUMS').write_text(checksums)
-    with tarfile.open(str(destination) + '.tar.gz', 'w:gz') as archive:
-        for p in sorted(destination.rglob('*')):
-            archive.add(p, arcname=destination.name + '/' + p.relative_to(destination).as_posix(), recursive=False)
+    def public_header(info):
+        info.uid = info.gid = 0; info.uname = info.gname = ''; info.mtime = 0
+        info.pax_headers = {}; info.mode = 0o755 if info.isdir() else 0o644
+        return info
+    with open(str(destination) + '.tar.gz', 'xb') as raw:
+        with gzip.GzipFile(fileobj=raw, mode='wb', filename='', mtime=0) as compressed:
+            with tarfile.open(fileobj=compressed, mode='w') as archive:
+                for p in sorted(destination.rglob('*')):
+                    archive.add(p, arcname=destination.name + '/' + p.relative_to(destination).as_posix(), recursive=False, filter=public_header)
     return release

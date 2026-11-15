@@ -7,7 +7,9 @@ from . import records
 
 
 COMMANDS = {'record-new', 'new-unit', 'record-resume', 'record-links', 'record-retire',
-            'record-revise', 'register-existing', 'map-adopt', 'records'}
+            'record-revise', 'register-existing', 'map-adopt', 'records', 'draft-reports',
+            'report-check', 'report', 'report-recover-plan', 'report-recover', 'run-record',
+            'handoff', 'hpc-commands', 'launcher-check'}
 
 
 def configure(sub):
@@ -32,10 +34,37 @@ def configure(sub):
     entry.add_argument('--body-file', required=True); entry.add_argument('--approval-file', required=True)
     entry.add_argument('--expected-sha256', required=True, help='Current SHA-256 or absent')
     entry = sub.add_parser('records'); entry.add_argument('project')
+    for command in ('draft-reports', 'report-check', 'report'):
+        entry = sub.add_parser(command); entry.add_argument('project'); entry.add_argument('unit')
+        if command == 'report': entry.add_argument('--revision', required=True)
+    for command in ('report-recover-plan', 'report-recover'):
+        entry = sub.add_parser(command); entry.add_argument('project'); entry.add_argument('operation')
+        if command == 'report-recover': entry.add_argument('--plan-digest', required=True)
+    for command in ('run-record', 'handoff', 'hpc-commands'):
+        entry = sub.add_parser(command); entry.add_argument('project'); entry.add_argument('--record-file', required=True)
+        if command in ('run-record', 'handoff'): entry.add_argument('--expected-sha256')
+        if command == 'run-record': entry.add_argument('--approval-file')
+    entry = sub.add_parser('launcher-check'); entry.add_argument('script')
 
 
 def run(args):
-    decision = json.loads(Path(args.approval_file).read_text()) if hasattr(args, 'approval_file') else None
+    decision = json.loads(Path(args.approval_file).read_text()) if getattr(args, 'approval_file', None) else None
+    if args.command in {'draft-reports', 'report-check', 'report', 'report-recover-plan', 'report-recover'}:
+        from . import reports
+        if args.command == 'draft-reports': return reports.scaffold(args.project, args.unit)
+        if args.command == 'report-check':
+            result = reports.validate_report(args.project, args.unit)
+            return {k: result[k] for k in ('unit', 'metadata', 'figures', 'review_required')}
+        if args.command == 'report': return reports.render_report(args.project, args.unit, args.revision)
+        if args.command == 'report-recover-plan': return reports.report_recovery_plan(args.project, args.operation)
+        return reports.recover_report(args.project, args.operation, args.plan_digest)
+    if args.command in {'run-record', 'handoff', 'hpc-commands', 'launcher-check'}:
+        from . import execution
+        if args.command == 'launcher-check': return execution.validate_launcher(Path(args.script).read_text())
+        value = json.loads(Path(args.record_file).read_text())
+        if args.command == 'run-record': return execution.record_run(args.project, value, decision, args.expected_sha256)
+        if args.command == 'handoff': return execution.handoff(args.project, value, args.expected_sha256)
+        return execution.hpc_commands(args.project, value)
     if args.command in ('record-new', 'new-unit'):
         result = records.adopt_record(args.project, 'T' if args.command == 'new-unit' else args.kind,
             args.title, Path(args.body_file).read_text(), decision, args.parent, args.link, args.id)

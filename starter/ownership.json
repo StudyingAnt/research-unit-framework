@@ -6,6 +6,9 @@
   ".research-framework/policy/AGENTS.md": {
     "ownership": "A"
   },
+  ".research-framework/policy/REPORTING.md": {
+    "ownership": "A"
+  },
   "AGENTS.md": {
     "ownership": "D",
     "project_owner": "C"
@@ -93,6 +96,12 @@
     "ownership": "D",
     "project_owner": "B"
   },
+  "templates/report.en.md": {
+    "ownership": "A"
+  },
+  "templates/report.ko.md": {
+    "ownership": "A"
+  },
   "tools/build_reports.py": {
     "ownership": "A"
   },
@@ -100,6 +109,9 @@
     "ownership": "A"
   },
   "tools/new_unit.py": {
+    "ownership": "A"
+  },
+  "tools/report.css": {
     "ownership": "A"
   }
 }

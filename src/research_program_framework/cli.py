@@ -45,6 +45,7 @@ def parser():
     new.add_argument('project'); new.add_argument('--release')
     release = sub.add_parser('build-release', help='Build from the development source tree')
     release.add_argument('destination'); release.add_argument('--source', default='.')
+    release.add_argument('--require-clean', action='store_true')
     for command in ('update-plan', 'update'):
         update = sub.add_parser(command)
         update.add_argument('project'); update.add_argument('--release', required=True)
@@ -73,7 +74,7 @@ def main(argv=None):
     args = parser().parse_args(argv)
     try:
         if args.command == 'build-release':
-            result = {'version': build(args.source, args.destination).framework_version}
+            result = {'version': build(args.source, args.destination, args.require_clean).framework_version}
         elif args.command == 'new':
             with selected_release(args.release) as (payload, release):
                 result = create_project(args.project, payload, release)

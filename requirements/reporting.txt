@@ -1,0 +1,6 @@
+# Optional reporting environment, separate from the standard-library runtime.
+# Pandoc and Noto/Arial fonts are external tools/assets; no fonts are redistributed.
+weasyprint==66.0
+matplotlib==3.11.2
+Pillow>=11,<14
+fonttools>=4.58,<5
