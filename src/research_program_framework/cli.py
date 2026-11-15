@@ -64,6 +64,8 @@ def parser():
     for command in ('migration-rollback-plan', 'migration-rollback'):
         recovery = sub.add_parser(command); recovery.add_argument('backup_directory')
         if command == 'migration-rollback': recovery.add_argument('--plan-digest', required=True)
+    from .commands import configure
+    configure(sub)
     return result
 
 
@@ -101,6 +103,9 @@ def main(argv=None):
             result = plan_migration_rollback(args.backup_directory)
         elif args.command == 'migration-rollback':
             result = rollback_migration(args.backup_directory, args.plan_digest)
+        elif args.command in __import__('research_program_framework.commands', fromlist=['COMMANDS']).COMMANDS:
+            from .commands import run
+            result = run(args)
         else:
             plan = (plan_recovery if args.command.startswith('recover') else plan_rollback)(args.project, args.operation)
             if args.command.endswith('-plan'):
