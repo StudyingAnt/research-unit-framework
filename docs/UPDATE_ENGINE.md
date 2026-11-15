@@ -1,6 +1,6 @@
 # Phase 3 Safe Update Engine
 
-**Status:** Implemented for existing registered installations; no initialization, v0.5 migration, CLI, or release publisher  
+**Status:** Implemented update/recovery engine for registered installations; adjacent lifecycle modules are documented separately
 **Contracts:** [Architecture](ARCHITECTURE.md), [ownership policy](OWNERSHIP_AND_UPDATES.md), [manifest/path validation](MANIFESTS_AND_PATHS.md), [traceability](REQUIREMENTS_TRACEABILITY.md)
 
 ## 1. Scope and prerequisites
@@ -92,4 +92,10 @@ The tested environment remains the existing Python 3.9.18 on Linux/WSL. No depen
 
 Advisory locks serialize cooperating engine instances. The engine checks identities/content before and after writes; it cannot provide a globally atomic snapshot or serialize a noncooperating process in the final check-to-rename window. Run mutations while external editors/jobs are quiescent. Checksums are integrity checks, not authentication against an attacker who can rewrite all manager state. Missing/corrupt audit metadata, unknown intermediate states, or unverified external edits require manual inspection; they are not permission for destructive cleanup.
 
-No initializer, metadata-free v0.5 migration, archive extraction, release discovery/signature policy, CLI, reporting, or publication is implemented. These and broader platform/real-deployment acceptance remain later authorized work. Phase 3 stops for review without commit, push, or Phase 4 work.
+This module operates only on registered installations. Separate implemented modules
+provide [initialization](INSTALLATION.md), [metadata-free migration](MIGRATION.md),
+[reporting](REPORTING.md), and the CLI/release workflow. Archive extraction and a
+publisher signature/discovery trust policy are not automatic update operations;
+operators select and verify a trusted release. The earlier 103-test result is a
+historical Phase 3 checkpoint. [Complete acceptance](ACCEPTANCE.md) records the
+subsequent autonomous implementation and actual platform/deployment limits.

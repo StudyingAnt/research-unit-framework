@@ -1,10 +1,10 @@
 # Framework v1.1 Architecture
 
 **Decision date:** 2026-11-14  
-**Status:** Adopted architecture; Phase 3 guarded update engine implemented  
+**Status:** Implemented v1.1 framework; acceptance and release procedure documented
 **Scientific authority:** [Primary specification](RESEARCH_PROGRAM_FRAMEWORK_v1.1.md), with [Korean companion](RESEARCH_PROGRAM_FRAMEWORK_v1.1_ko.md)
 
-This document records the approved architecture. Future paths and operations describe required implementation, not working software. [Ownership and updates](OWNERSHIP_AND_UPDATES.md) is the normative mutation contract; [requirements traceability](REQUIREMENTS_TRACEABILITY.md) identifies later acceptance evidence.
+This document records the approved architecture. The implementation follows these boundaries; acceptance evidence and practical limits are recorded separately. [Ownership and updates](OWNERSHIP_AND_UPDATES.md) is the normative mutation contract; [requirements traceability](REQUIREMENTS_TRACEABILITY.md) identifies later acceptance evidence.
 
 ## 1. Boundaries and sources of authority
 
@@ -41,13 +41,13 @@ research-unit-framework/
 └── .github/workflows/                # Future verification and artifact builds
 ```
 
-Phase 2 added the reviewed historical baseline, validators, schemas, and tests. Phase 3 adds update planning/merging, descriptor-anchored storage, journaled application, recovery, rollback, and synthetic integration tests. Remaining paths in this target tree describe later work, not completed tooling. The local context is checkout-only developer information, not framework installation metadata or release payload. Shared documents and release artifacts contain generic policies without workstation-specific paths or local research project names. Do not create remaining future directories merely to make the tree look implemented.
+Phase 2 added the reviewed historical baseline, validators, schemas, and tests. Phase 3 adds update planning/merging, descriptor-anchored storage, journaled application, recovery, rollback, and synthetic integration tests. Phases 4–9 add the starter/runtime, initialization, conservative migration, scientific records, bilingual reporting, handoffs, schemas, archive acceptance and release automation. The local context is checkout-only developer information, not framework installation metadata or release payload. Shared documents and release artifacts contain generic policies without workstation-specific paths or local research project names. Keep generated artifacts separate from editable source.
 
 Maintain one editable starter source. A tagged source revision and its verified release archives define a versioned starter; do not maintain independently edited copies for every release. Compatibility snapshots are immutable migration ancestors with recorded provenance, not alternative current starters. Starter v3 is a distribution name; its framework version is v0.5.
 
 ## 3. Runtime and delivery
 
-Use a Python framework CLI with a runtime built from the single source package. Release builds will bundle that runtime as a Python zip application, `runtime.pyz`, and ship the starter payload, schemas, release manifest, and checksums. Generated runtime archives are build products, not another editable source copy. Select and record supported interpreter/dependency versions through later validation; Phase 1 establishes no tested compatibility matrix.
+Use a Python framework CLI with a runtime built from the single source package. Release builds will bundle that runtime as a Python zip application, `runtime.pyz`, and ship the starter payload, schemas, release manifest, and checksums. Generated runtime archives are build products, not another editable source copy. Select and record supported interpreter/dependency versions through later validation; Core administration is tested on Python 3.9 and 3.11 on Linux/WSL; optional rendering has a separately observed environment.
 
 The installed runtime resides at `.research-framework/runtime.pyz`. Thin project helpers retain familiar unit-creation and report-building entry points, delegate to that runtime, and resolve the actual project root explicitly. They must work independently of the development checkout and must not depend on private workstation paths.
 
@@ -140,7 +140,7 @@ Before changing HPC workflows or instructions in a development checkout, follow 
 
 Initialization creates a selected release only after checking the destination and planned ownership. It does not initialize scientific Git repositories, clone software, install environments, or decide research direction. Existing nonempty destinations use inspected migration/merge plans rather than directory overlays.
 
-Upgrade uses a verified release manifest, the exact previous upstream ancestor, the local file, and the new upstream file. Dry-run produces a read-only plan. Explicit application rechecks its preconditions, preserves local edits, rejects unresolved conflicts, backs up affected files, journals staged writes, and commits installation state last. Guarded rollback protects later edits. Phase 3 implements these operations for existing registered installations; the [engine contract](UPDATE_ENGINE.md) records the exact API, tested bounds, and recovery guarantees. No initialization or metadata-free adoption is implied.
+Upgrade uses a verified release manifest, the exact previous upstream ancestor, the local file, and the new upstream file. Dry-run produces a read-only plan. Explicit application rechecks its preconditions, preserves local edits, rejects unresolved conflicts, backs up affected files, journals staged writes, and commits installation state last. Guarded rollback protects later edits. Phase 3 implements these operations for existing registered installations; the [engine contract](UPDATE_ENGINE.md) records the exact API, tested bounds, and recovery guarantees. [Initialization](INSTALLATION.md) and [metadata-free adoption](MIGRATION.md) are separate implemented operations, not updater side effects.
 
 Metadata-free v0.5 adoption uses a separately reviewed migration plan. Preserve existing layout, AST IDs, reports, results, research instructions, configuration, repositories, and untracked files. Record observed legacy baseline provenance without inventing historical installation metadata. Unknown ancestors require conservative manual resolution. Keep local reporting improvements; do not automatically regenerate reports or write a scientific Research Map.
 
@@ -152,7 +152,7 @@ Use temporary synthetic projects for automated tests of ownership, path handling
 
 Automated checks establish structural and operational properties; manual scientific and bilingual review remains necessary. Actual cross-agent loading and human-operated HPC behavior require appropriate acceptance evidence, not claims inferred from unit tests.
 
-Separate specification version `1.1`, future implementation release versions such as `1.1.0-rc.1`, and schema versions. No implementation release or compatibility promise is issued by Phase 1. Verify archives through initialization, upgrade, and migration tests using the artifact itself. License/reuse terms, supported version matrices, and complete mathematical backend coverage must be resolved before claiming the corresponding release capabilities. Do not redistribute proprietary fonts or personal environment artifacts.
+Separate specification version `1.1`, implementation release versions such as `1.1.0-rc.1` and `1.1.0`, and schema versions. No implementation release or compatibility promise is issued by Phase 1. Verify archives through initialization, upgrade, and migration tests using the artifact itself. License/reuse terms, supported version matrices, and complete mathematical backend coverage must be resolved before claiming the corresponding release capabilities. Do not redistribute proprietary fonts or personal environment artifacts.
 
 ## 10. Phase checkpoints
 
@@ -161,6 +161,12 @@ Separate specification version `1.1`, future implementation release versions suc
 | 1 | Architecture, ownership policy, development instructions, specification reconciliation, requirements traceability | Approved, including the portability follow-up; committed/pushed by the researcher |
 | 2 | Observed legacy baseline, manifests, secure path/file validation, and component tests | Complete and committed by the researcher |
 | 3 | Read-only plans, merging/conflicts, backups, journaling, recovery, guarded rollback, and safety tests | Authorized and implemented; see engine validation evidence |
-| Later phases | Initialization, v0.5 migration, scientific records, reporting, handoffs, release validation | Not started; authorize and validate one phase at a time |
+| 4 | Versioned starter, self-contained runtime, new-project creation | Implemented; independent archive acceptance passes |
+| 5 | Metadata-free v0.5 migration and installed version/ownership tracking | Implemented; synthetic preservation, interruption and guarded undo pass |
+| 6 | Narrative/Workstreams/AST/Specifications/Map/IDs/manuscript evidence | Implemented; explicit approvals, many-to-many relationships and same-ID recovery tested |
+| 7 | Detailed bilingual MD/HTML/PDF, equations and figures | Implemented; real rendering and corrected physical-size visual inspection pass |
+| 8 | Optional Runs, handoffs, provenance and human-operated HPC | Implemented; synthetic consistency and command-boundary checks pass |
+| 9 | Comprehensive acceptance and release candidate | Implemented; clean RC archive, complete local suite and Python 3.9/3.11 remote CI verified |
+| 10 | Final version, release, Git publication and authorized active-target assessment | Software acceptance verified; observe publication and target deployment results separately |
 
-After Phase 3 validation, stop for review. The [engine contract and test results](UPDATE_ENGINE.md) state what is actually verified. Do not begin Phase 4, initialize a project, or implement v0.5 migration. Approval of the architecture is distinct from authorization for a phase, mutation of an active project, commit, push, tag, or publication.
+The researcher explicitly authorizes autonomous completion of Phases 3–10, logical commits and reviewed pushes, and final active-target migration only under the stated backup/conflict/preservation conditions. The original reference remains read-only. [Acceptance](ACCEPTANCE.md), [traceability](REQUIREMENTS_TRACEABILITY.md) and [release procedure](RELEASE.md) distinguish implemented behavior, verification and remaining limits.

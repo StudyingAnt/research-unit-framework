@@ -11,7 +11,7 @@ Read both specifications completely before changing the design:
 
 Read [architecture](docs/ARCHITECTURE.md), [ownership and updates](docs/OWNERSHIP_AND_UPDATES.md), and [requirements traceability](docs/REQUIREMENTS_TRACEABILITY.md) before changing their implementation. Explicit user instructions take precedence. Surface inconsistencies and reconcile both specifications; do not substitute assumptions or silently weaken requirements.
 
-This file governs framework development. The future project starter has its own research-project instructions; do not install these development instructions into scientific projects.
+This file governs framework development. The project starter has its own research-project instructions; do not install these development instructions into scientific projects.
 
 ## Checkout-local context discovery
 
@@ -59,7 +59,7 @@ There is no report page-count target, minimum, or maximum. Do not introduce a ty
 
 Use the explicit ownership policy: framework-managed files, project-owned scientific records, project-specific configuration, and initialization-only files. Unknown files are unowned and preserved. Directory location alone never grants overwrite authority.
 
-Future mutation tools must plan changes first, preserve exact upstream bases and local modifications, reject unresolved conflicts, create verified backups, and support guarded rollback. Dry-run must not create files, caches, locks, or backups. Updates must not regenerate existing reports, alter research direction, touch independent Git histories, or rebuild scientific environments.
+Mutation tools must plan changes first, preserve exact upstream bases and local modifications, reject unresolved conflicts, create verified backups, and support guarded rollback. Dry-run must not create files, caches, locks, or backups. Updates must not regenerate existing reports, alter research direction, touch independent Git histories, or rebuild scientific environments.
 
 ## Local development and verification
 

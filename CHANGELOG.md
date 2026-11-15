@@ -1,6 +1,8 @@
 # Changelog
 
-## 1.1.0-rc.1
+## 1.1.0
+
+Validated from the local 1.1.0-rc.1 development candidate.
 
 - Strict ownership-aware release manifests and descriptor-relative path checks.
 - Read-only plans, conservative text merging, verified backups, durable update

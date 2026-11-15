@@ -259,7 +259,12 @@ def render_report(project, unit, revision):
     with Store(project) as store:
         store.report_references = {}; store.report_images = set()
         store.report_widths = {f['path']: f['declared']['width_mm'] for f in checked['figures']}
-        config = configuration(store)['reporting']; root = checked['root']
+        config = dict(configuration(store)['reporting']); root = checked['root']
+        for lang in ('en', 'ko'):
+            location = config.get('font_' + lang)
+            if location and not Path(location).is_absolute():
+                validate_relative_path(location)
+                config['font_' + lang] = str(store.root / location)
         pandoc = config.get('pandoc', 'pandoc'); preview = config.get('preview', False)
         css_snapshot = store.read('tools/report.css')
         if css_snapshot.data is None: raise ValidationError('Report stylesheet is missing')

@@ -96,6 +96,29 @@ changed to work around the adapter.
 
 ## Final release checkpoint
 
-Pending final regression, corrected HTML/PDF visual inspection, clean-source
-release build, remote CI/release verification and safe active-target assessment.
-These are acceptance tasks, not implied by the pre-final test results above.
+The renderer-enabled complete suite ran 155 tests: 154 passed; actual Unix socket
+creation was skipped because this sandbox rejects it. Independent socket-type
+rejection still passed. The core-only environment passed 141 with 14 explicit
+optional/sandbox skips. GitHub verified both Python 3.9 and 3.11 successfully on
+the committed implementation candidate. No hidden renderer skip is called a pass.
+
+A clean source commit generated the independently usable 1.1.0-rc.1 candidate.
+Source/unpublished-history audits and the 58-entry archive audit found no private
+context/credential patterns or unsafe ownership headers. No protected content
+was copied into the public candidate. These audits supplement manual source review.
+
+The corrected candidate was used to create a fresh synthetic project and render
+EN/KO reports through its installed zip runtime. Both PDF outputs had three pages
+(informational). All six rasterized PDF pages and full HTML screenshots were
+visually inspected: text/glyphs, equation notation, tables, captions, Figure and
+page flow were present without observed clipping. Linux Chromium inspection
+confirmed eleven headings per language, loaded report fonts, complete images,
+no horizontal overflow, no page errors and an 85 mm Figure displayed at 321.25
+CSS pixels. All external browser requests were blocked. The browser and its
+temporary profile were isolated under temporary storage; no research environment
+or Windows configuration was changed.
+
+The implementation version is 1.1.0. Verify publication from the actual Git tag,
+GitHub workflow and release assets. Record real-target deployment separately in
+checkout-local context; this generic acceptance record does not claim that an
+active scientific project has been migrated. No private target details enter it.

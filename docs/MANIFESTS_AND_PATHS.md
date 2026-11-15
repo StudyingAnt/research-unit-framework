@@ -39,7 +39,7 @@ Verification is an observed, read-only check, not a globally atomic snapshot of 
 
 ## 3. API and validation workflow
 
-For a future bundle with a manifest outside its payload directory, the read-only sequence is:
+For a verified bundle with a manifest outside its payload directory, the read-only sequence is:
 
 ```python
 from pathlib import Path

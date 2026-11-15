@@ -27,6 +27,7 @@ class InitializationTests(unittest.TestCase):
         self.assertEqual(process.returncode, 0, process.stderr)
         receipt = json.loads((self.project / '.research-framework/installation.json').read_text())
         self.assertEqual(receipt['generation'], 0)
+        self.assertTrue((self.root / 'release/schemas/report.schema.json').is_file())
         self.assertFalse((self.project / '.git').exists())
         self.assertEqual(json.loads((self.project / 'coordination/plans/ID_REGISTRY.json').read_text())['records'], [])
         self.assertFalse(plan_update(self.project, self.root / 'release/payload', self.release).conflicts)

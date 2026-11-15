@@ -57,7 +57,7 @@ def audit_bytes(data, label, forbidden=(), depth=0):
         try: value = json.loads(data)
         except (ValueError, UnicodeError): value = None
         if isinstance(value, dict):
-            for key in ('files', 'legacy_files'):
+            for key in ('files', 'legacy_files', 'schemas'):
                 if key in value and isinstance(value[key], dict):
                     for name, encoded in value[key].items():
                         if isinstance(encoded, str):

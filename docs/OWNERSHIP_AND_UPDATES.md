@@ -1,10 +1,10 @@
 # File Ownership and Safe Updates
 
 **Decision date:** 2026-11-14  
-**Status:** Adopted policy; Phase 3 implements guarded updates/recovery for registered installations  
+**Status:** Implemented ownership policy for initialization, migration, updates and recovery
 **Related contracts:** [Architecture](ARCHITECTURE.md), [primary specification](RESEARCH_PROGRAM_FRAMEWORK_v1.1.md), [requirements traceability](REQUIREMENTS_TRACEABILITY.md)
 
-This policy governs future initialization, framework upgrades, migration, and recovery. It does not authorize any operation against a project. An operation must stay within the user's named project and approved scope. Reference projects designated by the user or checkout-local development context remain strictly read-only; their locations belong only in that Git-excluded context.
+This policy governs initialization, framework upgrades, migration, and recovery. It does not authorize any operation against a project. An operation must stay within the user's named project and approved scope. The original reference remains read-only. The active target can change only in its explicitly authorized final validated migration; locations belong only in Git-excluded local context.
 
 ## 1. Ownership classes
 
@@ -21,7 +21,7 @@ An unknown or unregistered existing file is **unowned and preserved**, including
 
 ## 2. New-project defaults and legacy treatment
 
-The following are planned installed-project paths, not files created by Phase 1:
+The following installed-project roles are implemented by the starter, manifest and operation validators:
 
 | Path or role | New-project ownership | Existing-project treatment |
 |---|---|---|
@@ -135,6 +135,6 @@ Do not move or rename existing units, repositories, output directories, primary 
 
 ## 9. Acceptance boundary
 
-Later automated acceptance must exercise every merge decision, unmanaged collisions, local deletions, unknown bases, failed backups, interrupted writes, concurrent edits, path/link attacks, state corruption, repeat invocation, and guarded rollback using synthetic projects. Preservation checks cover scientific records, local instructions/configuration, independent Git contents/history, untracked files, and unrelated paths.
+Automated acceptance exercises every merge decision, unmanaged collisions, local deletions, unknown bases, failed backups, interrupted writes, concurrent edits, path/link attacks, state corruption, repeat invocation, and guarded rollback using synthetic projects. Preservation checks cover scientific records, local instructions/configuration, independent Git contents/history, untracked files, and unrelated paths.
 
-Phase 1 adopted this policy and Phase 2 preserved the reviewed baseline and implemented validators. Phase 3 implements read-only update plans, in-memory merging, verified backup/staging, journaled application, recovery, and guarded rollback for already registered installations. It preserves B/C/D records, including deleted seeds, and implements neither initialization nor metadata-free migration. See the [engine contract and validation evidence](UPDATE_ENGINE.md) for the actual guarantees and limitations. Reference projects remain strictly read-only.
+Phase 1 adopted this policy and Phase 2 preserved the reviewed baseline and implemented validators. Phase 3 implements read-only update plans, in-memory merging, verified backup/staging, journaled application, recovery, and guarded rollback for already registered installations. It preserves B/C/D records, including deleted seeds. Separate later modules implement initialization and metadata-free migration with external verified backups and guarded recovery. See the [engine contract and validation evidence](UPDATE_ENGINE.md) for the actual guarantees and limitations. The original reference remains read-only; active-target migration is conditional on final validated authorization. See [migration](MIGRATION.md) and [acceptance](ACCEPTANCE.md).

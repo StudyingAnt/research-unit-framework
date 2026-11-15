@@ -37,8 +37,15 @@ python3 newproj.pyz update /absolute/project --release /absolute/release --plan-
 
 Plans go to standard output and never write into the project. Apply recomputes
 the plan and requires the exact reviewed digest. Unresolved conflicts refuse
-application. Python API callers can supply reviewed resolutions for registered
-managed paths; seeds and unknown collisions cannot be overridden by that API.
+application. `--keep-local PATH` explicitly retains a registered managed file;
+`--resolution-file FILE` maps managed paths to reviewed content-file paths or null
+(keep local). Use identical options for plan/apply. Seeds and unknown collisions
+cannot be overridden. Python callers can supply the same reviewed bytes directly.
 Rollback and recovery use the corresponding `*-plan` command followed by its
 mutation command with the returned digest and operation ID. Preserve all backup
 and journal state; see [the update engine](UPDATE_ENGINE.md).
+
+The standalone zip application is the primary self-contained delivery. An optional
+regular source-package installation uses an explicit verified `--release` directory
+for initialization/migration; editable development installs can use the checkout.
+It never searches unrelated workstations for missing starter assets.

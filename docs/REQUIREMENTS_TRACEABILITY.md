@@ -1,15 +1,15 @@
 # Framework v1.1 Requirements Traceability
 
 **Date:** 2026-11-14  
-**Checkpoint:** Phase 3 guarded update/recovery engine
+**Checkpoint:** Framework v1.1 implementation and acceptance
 
 Sources are the [primary English specification](RESEARCH_PROGRAM_FRAMEWORK_v1.1.md), [Korean companion](RESEARCH_PROGRAM_FRAMEWORK_v1.1_ko.md), the researcher's architecture/migration request and detailed reporting requirements, and the autonomous authorization for Phases 3 through 10. The [architecture](ARCHITECTURE.md) and [ownership policy](OWNERSHIP_AND_UPDATES.md) record adopted engineering decisions. [Development instructions](../AGENTS.md) enforce the current work boundary.
 
-All requirements below are specified. Phase 2 delivered the reviewed baseline and validators. Phase 3 implements update plans, text merging, verified backups, journaled application/recovery, and guarded rollback for existing registered installations, with the evidence below. Initialization, v0.5 migration, scientific-record workflows, reporting, and release building remain later work. The reference projects' prior capabilities are not an installed v1.1 implementation here.
+All requirements below are specified and implemented with the evidence and limits below. Phase 2 delivered the reviewed baseline and validators; Phases 3–9 add guarded updates/recovery, standalone starters, initialization, conservative v0.5 migration, researcher-adopted scientific records, detailed bilingual reporting, handoffs and release acceptance. The active reference is not considered migrated merely because this repository is implemented. Final deployment/release status is recorded separately.
 
 ## 1. Scientific and governance requirements
 
-| ID | Requirement and source | Adopted design / later acceptance evidence |
+| ID | Requirement and source | Implemented design / acceptance evidence |
 |---|---|---|
 | R01 | Researcher controls direction, priorities, consequential choices, adopted claims, and publication (specification sections 1, 7, 13) | Explicit decision rights and dated adopted changes; agent cannot adopt a proposal from successful execution |
 | R02 | Narrative separates question, hypothesis, observation, inference, alternative, synthesis (2.1, 6) | Research Map and revision records preserve epistemic categories and researcher approval |
@@ -29,7 +29,7 @@ All requirements below are specified. Phase 2 delivered the reviewed baseline an
 
 ## 2. Reporting requirements
 
-| ID | Requirement and source | Adopted design / later acceptance evidence |
+| ID | Requirement and source | Implemented design / acceptance evidence |
 |---|---|---|
 | R16 | Methodological depth suitable for manuscript preparation and collaborator/advisor review (approved reporting request; 9–10.3) | Eleven corresponding sections; reader can understand rationale, actual procedures, units, measurements, filters, preprocessing, calculations, controls, uncertainty, exact specifications, evidence construction, results, interpretation, and limits without opening code |
 | R17 | No arbitrary report length restriction (approved reporting request; 10) | No target, minimum, maximum, typical-length recommendation, truncation, page-count build gate, typography shrinking, or matching-language-page requirement; page counts informational only |
@@ -41,7 +41,7 @@ All requirements below are specified. Phase 2 delivered the reviewed baseline an
 
 ## 3. Engineering requirements added by the architecture/migration request
 
-| ID | Requirement and source | Adopted design / later acceptance evidence |
+| ID | Requirement and source | Implemented design / acceptance evidence |
 |---|---|---|
 | R23 | Authoritative Git-managed source and versioned starters | One editable source, versioned verified release archives, distinct specification/release/schema versions; no distribution-version confusion |
 | R24 | Ownership A/B/C/D and project preservation | Explicit file allowlists, D-to-B/C transition, unknown files preserved, root research instructions/configuration protected; generated installation state distinct from scientific records |
@@ -97,3 +97,26 @@ See [manifest and path validation](MANIFESTS_AND_PATHS.md) for the format and hi
 | R30: scope and preservation | Phase instructions updated, scientific specifications and observed baseline unchanged, protected references remain read-only | Subsequent phases proceed under the autonomous completion authorization |
 
 The [update engine contract](UPDATE_ENGINE.md) documents the exact API, consumed receipt format, tests, and remaining platform/concurrency limits. Later scientific and deployment requirements are authorized and remain pending implementation at this checkpoint.
+
+## 7. Complete implementation evidence
+
+The earlier sections retain historical phase evidence. This table supersedes
+their old implementation limits for current capability claims.
+
+| Requirements | Current implementation and observed evidence | Practical boundary |
+|---|---|---|
+| R01–R04, R07, R15 | `records.py`, scientific starter policy and Research Map/Aim templates; explicit approval references, preserved map/record revisions, epistemic categories and material Specifications | Validators do not authenticate approval or decide methodological adequacy; scientific adoption remains human |
+| R03, R08 | Many-to-many W–A links and independent M–T evidence associations; manuscript Claims/Supporting Evidence/Contradictory Evidence/Limitations/Decisions; network tests | A link alone does not establish support or adopt an interpretation |
+| R05–R06, R09 | Non-recycled bounded registry, existing-path collision discovery, retire/revise/register-existing, pending reservation and same-ID resume, optional R### separate from REV###; interruption tests | Ambiguous legacy identity conventions/capacity exhaustion need an explicit inspected decision |
+| R10–R12 | Archive-only creation of experimental/computational/theoretical/observational/hybrid records; no Run/code/Git requirement; configurable scientific paths and primary-system references | No real experiment, restricted-data access or scientific repository change is performed by administration |
+| R13–R14 | Shared explicit agent-policy bridges, durable scoped handoffs, actual/missing execution evidence, launcher validation and separate human-operated pull/submit/monitor/retrieve commands | Actual vendor loader behavior, remote resources/imports and institutional permissions require appropriate human checks |
+| R16–R18, R21 | Eleven-section detailed EN/KO templates, actual paired MD/HTML/PDF, no page gate, table-only completion, outcome reason, scalar/metadata/math comparisons; full renderer tests | Scientific/bilingual meaning is explicitly reviewed rather than inferred from structure or scalar agreement |
+| R19–R20, R22 | Actual Noto/Arial fonts, 600 dpi PNG and PDF/SVG exports, intended physical width, glyph/asset/math failures, honest provenance categories, verified producing/available distinctions, retained report revisions and guarded publication recovery | MathText subset, external font licensing, manual figure/scientific review; no historical regeneration or speculative rerun |
+| R23–R25 | Single editable source, deterministic runtime/release payload, strict A/D manifests and persistent B/C ownership, no-clobber fresh creation, empty unadopted records, archive-only execution | Linux/WSL supported administration; no mandatory scientific packaging/root Git or environment provisioning |
+| R26–R28 | Zero-write plans, B/L/N comparison and explicit resolutions, stale/unsafe-path/conflict refusal, verified backups, durable journals, guarded update/migration rollback, external metadata-free adoption recovery | Trusted administrative state/cooperating writers; unsupported ACLs/xattrs/ownership/filesystems fail closed |
+| R29–R30 | Complete 155-test renderer-enabled run: 154 pass, one sandbox-restricted socket creation skipped; Python 3.9/3.11 GitHub CI success; archive-only tests; public/history/archive audits; corrected HTML/PDF visual review | Final tag/assets and active-target status must be observed separately; publication grants no invented license |
+
+See [acceptance evidence](ACCEPTANCE.md) for actual environments, visual review,
+unperformed real-world activities and release/deployment status. No unsupported
+scientific judgment, institutional activity, full TeX engine or universal agent/
+cluster certification is silently represented as implemented automation.

@@ -35,6 +35,8 @@ def source_bundle(root):
             'source_revision': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=root, text=True).strip(),
             'files': {p: base64.b64encode(data).decode() for p, data in sorted(files.items())},
             'ownership': ownership,
+            'schemas': {p.name: base64.b64encode(read_payload_file(root / 'schemas', p.name)).decode()
+                        for p in sorted((root / 'schemas').glob('*.json'))},
             'legacy_manifest': json.loads((legacy / 'manifest.json').read_text()),
             'legacy_files': {f.path: base64.b64encode(read_payload_file(legacy / 'payload', f.path)).decode() for f in ancestor.files}}
 
@@ -73,6 +75,11 @@ def materialize(bundle, runtime_bytes, destination):
         target.chmod(0o644)
     (destination / 'manifest.json').write_bytes(encode(manifest_dict(release)))
     (destination / 'newproj.pyz').write_bytes(runtime_bytes)
+    for name, data in bundle.get('schemas', {}).items():
+        validate_path_set([name])
+        if '/' in name: raise ValidationError('Schema artifact must have a canonical filename')
+        directory = destination / 'schemas'; directory.mkdir(exist_ok=True)
+        (directory / name).write_bytes(base64.b64decode(data, validate=True))
     verify_release(destination / 'payload', release)
     return release
 
