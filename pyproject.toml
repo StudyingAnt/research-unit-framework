@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "research-program-framework"
+dynamic = ["version"]
+description = "Researcher-directed life-science program records and safe framework administration"
+requires-python = ">=3.9"
+
+[project.scripts]
+newproj = "research_program_framework.cli:main"
+
+[tool.setuptools.dynamic]
+version = {attr = "research_program_framework.__version__"}
+
+[tool.setuptools.packages.find]
+where = ["src"]

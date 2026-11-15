@@ -348,8 +348,13 @@ class RecoveryPlan:
     targets: tuple
     mode: str
 
+    @property
+    def digest(self):
+        from .updates import _digest_value
+        return hashlib.sha256(encode(_digest_value(self))).hexdigest()
+
     def describe(self):
-        return {'project': self.project, 'operation_id': self.operation_id, 'mode': self.mode,
+        return {'plan_digest': self.digest, 'project': self.project, 'operation_id': self.operation_id, 'mode': self.mode,
                 'targets': [{'path': path, 'current': snapshot.fingerprint()}
                             for path, snapshot in self.targets]}
 

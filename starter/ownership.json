@@ -1,0 +1,105 @@
+{
+  ".gitignore": {
+    "ownership": "D",
+    "project_owner": "C"
+  },
+  ".research-framework/policy/AGENTS.md": {
+    "ownership": "A"
+  },
+  "AGENTS.md": {
+    "ownership": "D",
+    "project_owner": "C"
+  },
+  "CLAUDE.md": {
+    "ownership": "D",
+    "project_owner": "C"
+  },
+  "PROJECT_INSTRUCTIONS.md": {
+    "ownership": "D",
+    "project_owner": "C"
+  },
+  "README.md": {
+    "ownership": "D",
+    "project_owner": "C"
+  },
+  "REPORT_TEMPLATE.md": {
+    "ownership": "D",
+    "project_owner": "C"
+  },
+  "analyses/.gitkeep": {
+    "ownership": "D",
+    "project_owner": "B"
+  },
+  "coordination/manuscripts/.gitkeep": {
+    "ownership": "D",
+    "project_owner": "B"
+  },
+  "coordination/plans/AIM_TEMPLATE.md": {
+    "ownership": "A"
+  },
+  "coordination/plans/ID_REGISTRY.json": {
+    "ownership": "D",
+    "project_owner": "B"
+  },
+  "coordination/plans/RESEARCH_MAP.md": {
+    "ownership": "D",
+    "project_owner": "B"
+  },
+  "coordination/presentations/.gitkeep": {
+    "ownership": "D",
+    "project_owner": "B"
+  },
+  "coordination/revisions/.gitkeep": {
+    "ownership": "D",
+    "project_owner": "B"
+  },
+  "data/.gitkeep": {
+    "ownership": "D",
+    "project_owner": "B"
+  },
+  "docs/compute.md": {
+    "ownership": "D",
+    "project_owner": "C"
+  },
+  "docs/figure_style.md": {
+    "ownership": "D",
+    "project_owner": "C"
+  },
+  "docs/hpc.md": {
+    "ownership": "D",
+    "project_owner": "C"
+  },
+  "envs/.gitkeep": {
+    "ownership": "D",
+    "project_owner": "B"
+  },
+  "framework-project.json": {
+    "ownership": "D",
+    "project_owner": "C"
+  },
+  "notes/.gitkeep": {
+    "ownership": "D",
+    "project_owner": "B"
+  },
+  "reports/.gitkeep": {
+    "ownership": "D",
+    "project_owner": "B"
+  },
+  "repos/.gitkeep": {
+    "ownership": "D",
+    "project_owner": "B"
+  },
+  "resources/.gitkeep": {
+    "ownership": "D",
+    "project_owner": "B"
+  },
+  "tools/build_reports.py": {
+    "ownership": "A"
+  },
+  "tools/framework.py": {
+    "ownership": "A"
+  },
+  "tools/new_unit.py": {
+    "ownership": "A"
+  }
+}

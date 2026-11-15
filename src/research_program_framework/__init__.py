@@ -1,1 +1,3 @@
-"""Framework validation and guarded updates; no initialization or legacy migration."""
+"""Researcher-directed scientific records and guarded framework administration."""
+
+__version__ = '1.1.0rc1'

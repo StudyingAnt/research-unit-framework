@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "paths": {
+    "plans": "coordination/plans",
+    "reports": "reports",
+    "analyses": "analyses",
+    "manuscripts": "coordination/manuscripts"
+  },
+  "reporting": {
+    "pandoc": "pandoc",
+    "font_en": null,
+    "font_ko": null,
+    "font_family_en": "Noto Serif",
+    "font_family_ko": "Noto Serif KR",
+    "preview": false
+  },
+  "primary_systems": []
+}

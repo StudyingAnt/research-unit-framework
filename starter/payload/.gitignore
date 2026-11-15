@@ -1,0 +1,5 @@
+# Local administrative state can include private project paths.
+.research-framework/backups/
+.research-framework/transactions/
+.research-framework/baselines/
+__pycache__/
