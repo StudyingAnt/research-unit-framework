@@ -1,0 +1,194 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Framework installation receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "kind": {
+      "const": "framework_installation"
+    },
+    "project_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{32}$"
+    },
+    "generation": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "release": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Framework release manifest",
+      "description": "Structural definition only; framework semantic and filesystem validation is also required.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "kind",
+        "framework_version",
+        "specification_version",
+        "source_revision",
+        "files"
+      ],
+      "properties": {
+        "schema_version": {
+          "type": "integer",
+          "const": 1
+        },
+        "kind": {
+          "const": "framework_release"
+        },
+        "framework_version": {
+          "type": "string",
+          "maxLength": 256,
+          "pattern": "^(?:0|[1-9][0-9]*)\\.(?:0|[1-9][0-9]*)\\.(?:0|[1-9][0-9]*)(?:-(?:0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*)(?:\\.(?:0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*))*)?(?:\\+[0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*)?$"
+        },
+        "specification_version": {
+          "type": "string",
+          "maxLength": 256,
+          "pattern": "^(?:0|[1-9][0-9]*)\\.(?:0|[1-9][0-9]*)$"
+        },
+        "source_revision": {
+          "type": "string",
+          "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$"
+        },
+        "files": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 10000,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "path",
+              "sha256",
+              "size",
+              "mode",
+              "ownership"
+            ],
+            "properties": {
+              "path": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096,
+                "pattern": "^[A-Za-z0-9_.-]+(?:/[A-Za-z0-9_.-]+)*$"
+              },
+              "sha256": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              },
+              "size": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "mode": {
+                "enum": [
+                  "0644",
+                  "0755"
+                ]
+              },
+              "ownership": {
+                "enum": [
+                  "A",
+                  "D"
+                ]
+              },
+              "project_owner": {
+                "enum": [
+                  "B",
+                  "C"
+                ]
+              }
+            },
+            "oneOf": [
+              {
+                "properties": {
+                  "ownership": {
+                    "const": "A"
+                  }
+                },
+                "not": {
+                  "required": [
+                    "project_owner"
+                  ]
+                }
+              },
+              {
+                "properties": {
+                  "ownership": {
+                    "const": "D"
+                  }
+                },
+                "required": [
+                  "project_owner"
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    "installed": {
+      "type": "object",
+      "additionalProperties": {
+        "anyOf": [
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "size": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "sha256": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              },
+              "mode": {
+                "enum": [
+                  "0644",
+                  "0755"
+                ]
+              }
+            },
+            "required": [
+              "size",
+              "sha256",
+              "mode"
+            ]
+          },
+          {
+            "type": "null"
+          }
+        ]
+      }
+    },
+    "last_operation": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "project_owned": {
+      "type": "object",
+      "additionalProperties": {
+        "enum": [
+          "B",
+          "C"
+        ]
+      }
+    }
+  },
+  "required": [
+    "schema_version",
+    "kind",
+    "project_id",
+    "generation",
+    "release",
+    "installed",
+    "last_operation"
+  ]
+}

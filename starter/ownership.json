@@ -3,6 +3,15 @@
     "ownership": "D",
     "project_owner": "C"
   },
+  ".research-framework/docs/compute.md": {
+    "ownership": "A"
+  },
+  ".research-framework/docs/figure_style.md": {
+    "ownership": "A"
+  },
+  ".research-framework/docs/hpc.md": {
+    "ownership": "A"
+  },
   ".research-framework/policy/AGENTS.md": {
     "ownership": "A"
   },

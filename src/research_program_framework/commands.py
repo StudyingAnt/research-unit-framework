@@ -9,7 +9,7 @@ from . import records
 COMMANDS = {'record-new', 'new-unit', 'record-resume', 'record-links', 'record-retire',
             'record-revise', 'register-existing', 'map-adopt', 'records', 'draft-reports',
             'report-check', 'report', 'report-recover-plan', 'report-recover', 'run-record',
-            'handoff', 'hpc-commands', 'launcher-check'}
+            'handoff', 'hpc-commands', 'launcher-check', 'inspect', 'doctor', 'audit-public'}
 
 
 def configure(sub):
@@ -45,10 +45,22 @@ def configure(sub):
         if command in ('run-record', 'handoff'): entry.add_argument('--expected-sha256')
         if command == 'run-record': entry.add_argument('--approval-file')
     entry = sub.add_parser('launcher-check'); entry.add_argument('script')
+    for command in ('inspect', 'doctor'):
+        entry = sub.add_parser(command); entry.add_argument('project')
+    entry = sub.add_parser('audit-public'); entry.add_argument('--source', default='.')
+    entry.add_argument('--archive')
 
 
 def run(args):
     decision = json.loads(Path(args.approval_file).read_text()) if getattr(args, 'approval_file', None) else None
+    if args.command in {'inspect', 'doctor'}:
+        from . import diagnostics
+        return getattr(diagnostics, 'inspect_project' if args.command == 'inspect' else 'doctor')(args.project)
+    if args.command == 'audit-public':
+        from . import privacy
+        result = privacy.audit_archive(args.archive, privacy.local_forbidden(args.source)) if args.archive else privacy.audit_repository(args.source)
+        if result['issues']: raise records.ValidationError('Public audit refused: ' + json.dumps(result['issues']))
+        return result
     if args.command in {'draft-reports', 'report-check', 'report', 'report-recover-plan', 'report-recover'}:
         from . import reports
         if args.command == 'draft-reports': return reports.scaffold(args.project, args.unit)

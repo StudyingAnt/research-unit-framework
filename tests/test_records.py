@@ -35,6 +35,7 @@ class RecordTests(unittest.TestCase):
 
     def test_ast_workstream_and_multiple_manuscript_network(self):
         a1 = self.add('A'); a2 = self.add('A')
+        self.assertEqual(a1['state'], 'active')
         w1 = self.add('W', links=[a1['id'], a2['id']]); w2 = self.add('W', links=[a1['id']])
         strategy = self.add('S', parent=a1['id']); tactic = self.add('T', body=TACTIC, parent=strategy['id'])
         m1 = self.add('M', body=MANUSCRIPT, links=[tactic['id']]); m2 = self.add('M', body=MANUSCRIPT, links=[tactic['id']])

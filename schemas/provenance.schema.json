@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Evidence verification boundaries",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "category": {
+      "enum": [
+        "protocol",
+        "sample",
+        "acquisition",
+        "computation",
+        "environment",
+        "input",
+        "output",
+        "interpretation",
+        "approval"
+      ]
+    },
+    "verification": {
+      "enum": [
+        "planned",
+        "source_default",
+        "reconstructed",
+        "verified_effective",
+        "unknown"
+      ]
+    },
+    "reference": {
+      "type": "string",
+      "minLength": 1
+    },
+    "description": {
+      "type": "string",
+      "minLength": 1
+    },
+    "producing_revision": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "available_revision": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "dirty_source_hashes": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string",
+        "pattern": "^[0-9a-f]{64}$"
+      }
+    }
+  },
+  "required": [
+    "category",
+    "verification",
+    "reference",
+    "description",
+    "producing_revision",
+    "available_revision",
+    "dirty_source_hashes"
+  ]
+}

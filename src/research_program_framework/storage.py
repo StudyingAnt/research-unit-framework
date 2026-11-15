@@ -1,4 +1,4 @@
-"""Descriptor-relative storage for registered-installation transactions only."""
+"""Descriptor-relative storage with registered and metadata-free operation locks."""
 
 from contextlib import contextmanager
 from dataclasses import dataclass

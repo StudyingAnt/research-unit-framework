@@ -43,7 +43,8 @@ def sources(project, revision='REV001', methods_repeat=1):
     for lang, bodies in [('en', EN), ('ko', KO)]:
         text = f'# {UNIT_ID}: Synthetic evidence\n\n**Unit ID:** {UNIT_ID}\n**Status:** COMPLETED\n**Outcome:** NOT_EVALUATED\n**Report revision:** {revision}\n\n'
         for index, (key, body) in enumerate(zip(SECTIONS, bodies)):
-            text += f'<!-- section: {key} -->\n## {index+1}. {key}\n\n' + (body * methods_repeat if key == 'methods' else body) + '\n\n'
+            label = key if lang == 'en' else dict(zip(SECTIONS, ['과학적 동기','Aim과 Tactic 질문','전략','Tactic과 방법','명세','수행과 검증','그림 또는 주요 증거','결과','분석과 해석','한계와 후속 질문','재현성과 산출물 참조']))[key]
+            text += f'<!-- section: {key} -->\n## {index+1}. {label}\n\n' + ('\n\n'.join([body] * methods_repeat) if key == 'methods' else body) + '\n\n'
         target = root / lang / 'report.md'; target.parent.mkdir(parents=True, exist_ok=True); target.write_text(text)
     metadata = {'schema_version': 1, 'unit_id': UNIT_ID, 'status': 'COMPLETED', 'outcome': 'NOT_EVALUATED',
         'outcome_reason': 'A deterministic software demonstration, with no scientific hypothesis evaluated.',

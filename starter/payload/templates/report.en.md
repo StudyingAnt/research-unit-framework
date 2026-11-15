@@ -1,8 +1,11 @@
 # {{UNIT_ID}}: {{TITLE}}
 
 **Unit ID:** {{UNIT_ID}}
+
 **Status:** PLANNING
+
 **Outcome:** NOT_EVALUATED
+
 **Report revision:** REV001
 
 <!-- section: motivation -->

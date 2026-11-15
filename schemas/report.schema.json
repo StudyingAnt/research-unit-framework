@@ -1,0 +1,146 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Paired scientific report metadata",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "unit_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "enum": [
+        "PLANNING",
+        "APPROVED",
+        "EXECUTING",
+        "WAITING",
+        "BLOCKED",
+        "FAILED",
+        "COMPLETED"
+      ]
+    },
+    "outcome": {
+      "enum": [
+        "NOT_EVALUATED",
+        "SUPPORTED",
+        "NOT_SUPPORTED",
+        "INCONCLUSIVE"
+      ]
+    },
+    "outcome_reason": {
+      "type": "string"
+    },
+    "revision": {
+      "type": "string",
+      "pattern": "^REV[0-9]{3}$"
+    },
+    "figures": {
+      "type": "array"
+    },
+    "provenance": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "category": {
+            "enum": [
+              "protocol",
+              "sample",
+              "acquisition",
+              "computation",
+              "environment",
+              "input",
+              "output",
+              "interpretation",
+              "approval"
+            ]
+          },
+          "verification": {
+            "enum": [
+              "planned",
+              "source_default",
+              "reconstructed",
+              "verified_effective",
+              "unknown"
+            ]
+          },
+          "reference": {
+            "type": "string",
+            "minLength": 1
+          },
+          "description": {
+            "type": "string",
+            "minLength": 1
+          },
+          "producing_revision": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "available_revision": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "dirty_source_hashes": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            }
+          }
+        },
+        "required": [
+          "category",
+          "verification",
+          "reference",
+          "description",
+          "producing_revision",
+          "available_revision",
+          "dirty_source_hashes"
+        ]
+      }
+    },
+    "review": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "methods": {
+          "type": "boolean"
+        },
+        "bilingual": {
+          "type": "boolean"
+        },
+        "visual": {
+          "type": "boolean"
+        },
+        "references": {
+          "type": "array"
+        }
+      },
+      "required": [
+        "methods",
+        "bilingual",
+        "visual",
+        "references"
+      ]
+    }
+  },
+  "required": [
+    "schema_version",
+    "unit_id",
+    "status",
+    "outcome",
+    "outcome_reason",
+    "revision",
+    "figures",
+    "provenance",
+    "review"
+  ]
+}

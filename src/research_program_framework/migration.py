@@ -163,6 +163,9 @@ def apply_migration(plan, backup_root):
         raise ValidationError('Unresolved migration conflicts; project remains unchanged')
     backup_root = _external(plan.project, backup_root)
     with Store(plan.project) as store, Store(backup_root) as backup, store.bootstrap_lock(), backup.bootstrap_lock():
+        import os, stat
+        if stat.S_IMODE(os.fstat(backup.fd).st_mode) & 0o077:
+            raise ValidationError('Migration recovery root must be private (mode 0700)')
         fresh = plan_migration(plan.project, plan.payload, plan.release, plan.legacy_manifest,
                                dict(plan.legacy_files), dict(plan.resolutions), plan.bridge)
         if fresh != plan:

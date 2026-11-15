@@ -1,40 +1,92 @@
-# Research Program Framework
+# Research Program Framework v1.1
 
-This repository is the authoritative Git-managed development source for Framework v1.1, its future versioned project starters, initialization, migration, safe updates, verification, and releases. The historical Starter v3 implements Framework v0.5.
+Researcher-directed life-science program records, detailed bilingual scientific
+reporting, and guarded framework administration. Scientific authority is the
+[English specification](docs/RESEARCH_PROGRAM_FRAMEWORK_v1.1.md), with its
+[Korean companion](docs/RESEARCH_PROGRAM_FRAMEWORK_v1.1_ko.md).
 
-The framework supports experimental, computational, theoretical, observational, and hybrid life-science research. Researchers control scientific direction and adopted claims; agents assist with authorized execution, reproducibility, and documentation.
+The implementation supports Narrative, flexible Workstreams, Aim/Strategy/Tactic
+and material Specifications, optional Runs, a Research Map and stable ID registry,
+manuscript evidence integration, durable handoffs and human-operated HPC workflows.
+Experimental, computational, theoretical, observational and hybrid work share the
+same governance. Scientific repositories remain independent; no project-root Git
+repository or installable analysis package is required.
 
-## Current implementation boundary
+## Use a release
 
-**Phase 3: guarded updates for existing registered installations.** The implementation now includes in-memory planning/three-way merging, conflict detection, verified backups/staging, transaction journals, failure recovery, stale-plan checks, and guarded rollback. It reuses the Phase 2 manifest/path validators and exact reviewed v0.5 snapshot. See [the update engine](docs/UPDATE_ENGINE.md) for the API, tests, and limits.
+Core administration requires Python 3.9+ on Linux/WSL. Download and verify a
+trusted release archive, then extract it into its own directory. Never overlay
+it onto an existing research project. The standalone newproj zip application
+also embeds the starter and works without this development checkout.
 
-No current v1.1 starter, runtime archive, CLI, project initializer, v0.5 migration, report builder, CI workflow, or release is implemented. Phase 3 tests use temporary synthetic projects. Protected reference mutations, Phase 4, Git commits, pushes, tags, and publication remain unauthorized.
+```bash
+python3 /absolute/release/newproj.pyz new /absolute/new/project
+python3 /absolute/project/.research-framework/runtime.pyz inspect /absolute/project
+python3 /absolute/project/.research-framework/runtime.pyz --help
+```
 
-## Documents
+The new destination must be absent. Initialization creates no scientific IDs,
+adopted direction, environments, independent repositories or remote jobs.
 
-| Document | Role |
-|---|---|
-| [English v1.1 specification](docs/RESEARCH_PROGRAM_FRAMEWORK_v1.1.md) | Primary scientific and governance requirements |
-| [Korean v1.1 specification](docs/RESEARCH_PROGRAM_FRAMEWORK_v1.1_ko.md) | Companion translation |
-| [Architecture](docs/ARCHITECTURE.md) | Adopted repository, deployment, scientific-record, and release boundaries |
-| [Ownership and updates](docs/OWNERSHIP_AND_UPDATES.md) | File ownership, conflict handling, migration, backup, and rollback contract |
-| [Requirements traceability](docs/REQUIREMENTS_TRACEABILITY.md) | Requirement sources, future acceptance evidence, and current implementation status |
-| [Manifest and path validation](docs/MANIFESTS_AND_PATHS.md) | Implemented Phase 2 contracts, API, tests, and limitations |
-| [Safe update engine](docs/UPDATE_ENGINE.md) | Phase 3 planning, backups, journaling, recovery, rollback, and limitations |
-| [Development instructions](AGENTS.md) | Agent scope, protected references, and phase gates |
+## Plan before existing-project changes
 
-## Checkout-local development context
+```bash
+python3 /absolute/release/newproj.pyz update-plan /absolute/project --release /absolute/release
+python3 /absolute/release/newproj.pyz update /absolute/project --release /absolute/release --plan-digest REVIEWED_DIGEST
+```
 
-At session start, agents follow `AGENTS.md` to explicitly discover the optional root `DEVELOPMENT_CONTEXT.local.md`. This Git-excluded file holds the actual checkout path, protected reference locations, execution context, and external policy-manual location. A new clone supplies its own verified location facts when needed; it does not inherit another workstation's paths. Missing context does not authorize dependent reference or HPC operations. Generic policies remain in the shared documents, and local context cannot expand permissions.
+Read-only plans create no files, locks or backups. Application rejects stale
+plans and unresolved conflicts, retains exact upstream ancestors and local edits,
+verifies backups before replacement, journals writes and finalizes metadata last.
+Guarded recovery/rollback protects later work. Unknown files and scientific records
+are preserved. See [ownership](docs/OWNERSHIP_AND_UPDATES.md) and
+[the update engine](docs/UPDATE_ENGINE.md) for guarantees and platform limits.
 
-## Reporting standard
+Metadata-free Starter v3 / Framework v0.5 projects use the distinct
+[migration procedure](docs/MIGRATION.md), with inspected legacy ancestry,
+explicit conflict resolutions and external verified recovery storage. Existing
+reports, analyses, layouts, research instructions and Git histories are preserved.
+Framework administration never regenerates scientific reports.
 
-One Tactic produces one scientifically complete report, with corresponding English and Korean Markdown, HTML, and PDF outputs. The report explains rationale, actual methods, material specifications, controls, calculations, uncertainty, figure or table construction, findings, interpretation, and provenance. It must support manuscript preparation without requiring readers to open source code.
+## Scientific work and reporting
 
-Reports have **no page-count target, minimum, or maximum**. Page counts are informational. Scientific completeness, readability, bilingual equivalence, and verified evidence determine acceptance. Figure defaults remain publication-oriented and configurable as specified.
+[Scientific record commands](docs/SCIENTIFIC_RECORDS.md) record explicit researcher
+approval references and preserve stable IDs/revisions. Program planning needs no
+AST unit; interrupted work resumes its existing identity. An agent cannot adopt
+a scientific direction or manuscript claim from a successful execution.
 
-## Reference safety
+[Reporting](docs/REPORTING.md) produces corresponding EN/KO editable Markdown,
+HTML and PDF with eleven sections, manuscript-level methodological guidance,
+static math, publication-quality figure checks and preserved revisions. There
+are no arbitrary page-count limits. Optional rendering dependencies and actual
+font files are configured separately; scientific/bilingual review and visual
+inspection remain explicit requirements. Unsupported math/assets/fonts fail
+honestly. Table-only and completed NOT_EVALUATED evidence are supported.
 
-The original v0.5 starter and active research project are strictly read-only references. No project installation or restructuring follows from adopting this architecture. Scientific records, data, code repositories, local research instructions, and existing reports remain project-owned. Research-specific content must not enter the generic framework or its test fixtures.
+[Execution and handoff tools](docs/EXECUTION_AND_HANDOFFS.md) distinguish intended,
+reconstructed, verified and unknown provenance. Humans retain remote access,
+submission, monitoring, transfers and physical/regulated operations. Command
+preparation does not execute remote work or provision environments.
 
-Future starters will come from one maintained source tree and versioned release artifacts. Scientific projects will not need this development checkout, a mandatory root Git repository, or mandatory packaging of analysis scripts.
+## Develop and validate
+
+Read [AGENTS.md](AGENTS.md) and any ignored checkout-local context explicitly.
+The original legacy reference is read-only. The active target remains read-only
+during development and can change only under the final validated migration
+conditions. Public sources, fixtures and releases contain generic content only.
+
+```bash
+PYTHONPATH=src python3 -B -m unittest discover -s tests -q
+PYTHONPATH=src python3 -B -m research_program_framework audit-public
+PYTHONPATH=src python3 -B -m research_program_framework build-release dist/rc
+```
+
+See [architecture](docs/ARCHITECTURE.md), [requirements traceability](docs/REQUIREMENTS_TRACEABILITY.md),
+[acceptance evidence](docs/ACCEPTANCE.md), [release workflow](docs/RELEASE.md),
+and [installation](docs/INSTALLATION.md). Core tests use synthetic temporary
+projects. Actual rendering acceptance uses a separately selected environment;
+optional dependency absence is reported as a skip rather than a false pass.
+
+No license grant is supplied or inferred. Third-party fonts, scientific packages
+and research content are not bundled. The legacy snapshot is inert historical
+migration evidence, not current operating policy.

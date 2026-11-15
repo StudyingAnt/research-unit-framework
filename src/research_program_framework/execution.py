@@ -46,7 +46,7 @@ def _time(value):
 def validate_run(value):
     fields = {'schema_version', 'unit_id', 'run_id', 'status', 'performer', 'started_at', 'completed_at',
               'command', 'external_id', 'provenance', 'outputs', 'validation'}
-    if type(value) is not dict or set(value) != fields or value['schema_version'] != 1:
+    if type(value) is not dict or set(value) != fields or type(value['schema_version']) is not int or value['schema_version'] != 1:
         raise ValidationError('Invalid optional Run record')
     if not re.fullmatch(r'A[0-9]{3}-S[0-9]{2}-T[0-9]{2}', value['unit_id']) or not re.fullmatch(r'R(?:00[1-9]|0[1-9][0-9]|[1-9][0-9]{2})', value['run_id']):
         raise ValidationError('Run identity must be nested under its Tactic')
@@ -67,7 +67,9 @@ def validate_run(value):
     checks = value['validation']
     if type(checks) is not dict or set(checks) != {'expected', 'received', 'checks', 'missing'} or any(type(v) is not list for v in checks.values()):
         raise ValidationError('Execution validation must distinguish expected, received, checked and missing evidence')
-    if value['status'] == 'COMPLETED' and (checks['missing'] or not checks['checks']):
+    if any(type(item) is not str or not item.strip() for items in checks.values() for item in items):
+        raise ValidationError('Execution validation entries must name actual evidence/checks')
+    if value['status'] == 'COMPLETED' and (checks['missing'] or not checks['checks'] or not set(checks['expected']) <= set(checks['received'])):
         raise ValidationError('Cannot mark incomplete/unvalidated required execution complete')
     return value
 
@@ -116,7 +118,7 @@ def record_run(project, record, decision=None, expected_sha256=None):
 def handoff(project, value, expected_sha256=None):
     fields = {'schema_version', 'unit_id', 'resume_id', 'status', 'approved_scope_reference', 'known_execution_ids',
               'evidence_received', 'evidence_missing', 'expected_outputs', 'next_human_step', 'updated_at'}
-    if type(value) is not dict or set(value) != fields or value['schema_version'] != 1:
+    if type(value) is not dict or set(value) != fields or type(value['schema_version']) is not int or value['schema_version'] != 1:
         raise ValidationError('Invalid cross-agent handoff')
     if value['resume_id'] != value['unit_id'] or value['status'] not in {'WAITING', 'BLOCKED', 'FAILED', 'EXECUTING', 'PLANNING', 'APPROVED', 'COMPLETED'}:
         raise ValidationError('Handoff must preserve the existing Tactic identity and actual status')
@@ -124,7 +126,9 @@ def handoff(project, value, expected_sha256=None):
         if type(value[key]) is not str or not value[key].strip(): raise ValidationError('Handoff requires approved scope and a concrete next step')
     for key in ('known_execution_ids', 'evidence_received', 'evidence_missing', 'expected_outputs'):
         if type(value[key]) is not list: raise ValidationError('Handoff evidence/identity fields must be explicit lists')
-    _time(value['updated_at'])
+    if _time(value['updated_at']) is None: raise ValidationError('Handoff update time must be an actual timezone-aware timestamp')
+    if value['status'] == 'COMPLETED' and value['evidence_missing']:
+        raise ValidationError('A completed handoff cannot conceal missing required evidence')
     with Store(project) as store, store.lock():
         _tactic(store, value['unit_id'])
         path = configuration(store)['paths']['analyses'] + '/' + value['unit_id'] + '/logs/handoff.json'

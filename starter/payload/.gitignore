@@ -2,4 +2,9 @@
 .research-framework/backups/
 .research-framework/transactions/
 .research-framework/baselines/
+.research-framework/adoption.json
+.research-framework/record-operations/
+.research-framework/execution-operations/
+.research-framework/report-builds/
+.research-framework/handoffs/
 __pycache__/

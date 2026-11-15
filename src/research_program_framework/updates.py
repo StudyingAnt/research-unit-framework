@@ -76,7 +76,7 @@ def project_owners(receipt):
 def read_receipt(store):
     snapshot = store.read(RECEIPT, MAX_METADATA)
     if snapshot.data is None:
-        raise ValidationError('Registered installation required; initialization and v0.5 migration are not implemented')
+        raise ValidationError('Registered installation required; inspect new-project or metadata-free migration commands')
     return validate_receipt(decode(snapshot.data)), snapshot
 
 

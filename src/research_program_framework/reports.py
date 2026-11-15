@@ -58,18 +58,20 @@ def scaffold(project, identity):
 
 def _metadata(data, unit):
     required = {'schema_version', 'unit_id', 'status', 'outcome', 'outcome_reason', 'revision', 'figures', 'provenance', 'review'}
-    if type(data) is not dict or set(data) != required or data['schema_version'] != 1:
+    if type(data) is not dict or set(data) != required or type(data['schema_version']) is not int or data['schema_version'] != 1:
         raise ValidationError('Invalid report metadata fields')
     if data['unit_id'] != unit.split('_', 1)[0] or data['status'] not in STATUS or data['outcome'] not in OUTCOME:
         raise ValidationError('Invalid report identity/status/outcome')
     if not re.fullmatch(r'REV[0-9]{3}', data['revision']): raise ValidationError('Report revisions use REV###, separately from Runs')
-    if data['status'] == 'COMPLETED' and data['outcome'] == 'NOT_EVALUATED' and not str(data['outcome_reason']).strip():
+    if type(data['outcome_reason']) is not str or data['status'] == 'COMPLETED' and data['outcome'] == 'NOT_EVALUATED' and not data['outcome_reason'].strip():
         raise ValidationError('Completed NOT_EVALUATED work requires its actual reason')
     if type(data['figures']) is not list or type(data['provenance']) is not list:
         raise ValidationError('Report figures/provenance must be lists')
     review = data['review']
     if type(review) is not dict or set(review) != {'methods', 'bilingual', 'visual', 'references'} or any(type(review[k]) is not bool for k in ('methods', 'bilingual', 'visual')) or type(review['references']) is not list:
         raise ValidationError('Explicit review fields required; rendering never sets scientific approval')
+    if any(type(ref) is not str or not ref.strip() for ref in review['references']) or any(review[k] for k in ('methods', 'bilingual', 'visual')) and not review['references']:
+        raise ValidationError('Recorded reviews require actual review references')
     from .execution import validate_provenance
     for item in data['provenance']: validate_provenance(item)
     return data
@@ -84,7 +86,8 @@ def _source(text, metadata):
     if tuple(markers) != SECTIONS: raise ValidationError('Report must retain eleven corresponding sections in order')
     chunks = re.split(r'<!-- section: [a-z]+ -->', visible)[1:]
     for name, chunk in zip(SECTIONS, chunks):
-        body = re.sub(r'^##[^\n]*\n', '', chunk.strip(), count=1).strip()
+        if not re.match(r'^##\s+\S', chunk.strip()): raise ValidationError('Scientific section heading missing: ' + name)
+        body = re.sub(r'^##[^\n]*(?:\n|$)', '', chunk.strip(), count=1).strip()
         if not body: raise ValidationError('Empty scientific section: ' + name)
     for field, expected in [('Unit ID', metadata['unit_id']), ('Status', metadata['status']),
                             ('Outcome', metadata['outcome']), ('Report revision', metadata['revision'])]:
@@ -96,7 +99,7 @@ def _source(text, metadata):
 def _numbers(text):
     text = re.sub(r'^#+.*$', '', text, flags=re.M)
     text = re.sub(r'\*\*[^\n]+|!?\[[^\]]*\]\([^)]*\)|<!--.*?-->', '', text)
-    return Counter(re.findall(r'(?<![A-Za-z0-9_])[-+]?\d+(?:\.\d+)?(?:[eE][-+]?\d+)?(?![A-Za-z0-9_])', text))
+    return Counter(re.findall(r'[-+]?\d+(?:\.\d+)?(?:[eE][-+]?\d+)?', text))
 
 
 def validate_report(project, unit):
@@ -129,6 +132,8 @@ def _figures(store, figures):
         source = store.read(item['path'])
         if source.data is None: raise ValidationError('Required figure is missing')
         if type(item['width_mm']) not in (float, int) or item['width_mm'] <= 0: raise ValidationError('Figure intended width must be positive')
+        if type(item['text_size_pt']) not in (float, int) or type(item['raster_embedded']) is not bool or item['exception'] is not None and (type(item['exception']) is not str or not item['exception'].strip()):
+            raise ValidationError('Figure metadata requires valid text size, raster declaration and exception reason')
         if not item['exception'] and item['kind'] == 'plot' and (item['font_family'] != 'Arial' or not 5 <= item['text_size_pt'] <= 7):
             raise ValidationError('Figure default deviation requires an explicit justification')
         if item['path'].lower().endswith('.png'):
@@ -152,7 +157,7 @@ def _figures(store, figures):
 def _safe_svg(data):
     text = data.decode('utf-8')
     text = re.sub(r'<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1\.1//EN"\s+"http://www\.w3\.org/Graphics/SVG/1\.1/DTD/svg11\.dtd">', '', text)
-    if (re.search(r'<!DOCTYPE|<!ENTITY|<script|<foreignObject|\son[a-z]+\s*=', text, re.I)
+    if (re.search(r'<!DOCTYPE|<!ENTITY|<script|<foreignObject|@import|\son[a-z]+\s*=', text, re.I)
             or re.search(r'(?:href|src)\s*=\s*["\'](?!#|data:)', text, re.I)
             or re.search(r'url\(\s*["\']?(?!#|data:)', text, re.I)):
         raise ValidationError('SVG contains active content or external references')
@@ -213,6 +218,13 @@ def _transform(value, store, root, lang, equations):
     result = {k: _transform(v, store, root, lang, equations) for k, v in value.items()}
     if result.get('t') in {'Image', 'Link'}:
         target = result['c'][-1]; target[0] = _asset(store, root, lang, target[0], result['t'] == 'Image')
+        if result['t'] == 'Image':
+            # PNG density alone does not control CSS physical display size.
+            # Use the declared publication width for HTML and PDF alike.
+            relative = Path(os.path.normpath(str(Path(root) / lang / value['c'][-1][0]))).as_posix()
+            width = store.report_widths.get(relative)
+            if width is None: raise ValidationError('Displayed image lacks intended-width figure metadata')
+            result['c'][0] = ['', [], [['style', 'width:' + str(width) + 'mm']]]
     if result.get('t') in {'RawInline', 'RawBlock'}:
         if result['c'][0] != 'html' or not result['c'][1].startswith('<img class="math-'):
             raise ValidationError('Raw executable/HTML content is not accepted in report sources')
@@ -246,6 +258,7 @@ def render_report(project, unit, revision):
     if checked['metadata']['revision'] != revision: raise ValidationError('Source and requested report revision differ')
     with Store(project) as store:
         store.report_references = {}; store.report_images = set()
+        store.report_widths = {f['path']: f['declared']['width_mm'] for f in checked['figures']}
         config = configuration(store)['reporting']; root = checked['root']
         pandoc = config.get('pandoc', 'pandoc'); preview = config.get('preview', False)
         css_snapshot = store.read('tools/report.css')
@@ -265,7 +278,8 @@ def render_report(project, unit, revision):
                 for lang in ('en', 'ko'):
                     source = checked['sources'][lang].data
                     clean_source = re.sub(br'<!--.*?-->', b'', source, flags=re.S)
-                    ast = decode(_pandoc(pandoc, ['--from=markdown-raw_html', '--to=json'], clean_source))
+                    reader = 'markdown-raw_html-raw_tex-raw_attribute-header_attributes-link_attributes-fenced_divs-fenced_code_attributes'
+                    ast = decode(_pandoc(pandoc, ['--from=' + reader, '--to=json'], clean_source))
                     equations[lang] = []
                     transformed = _transform(ast, store, root, lang, equations[lang])
                     fragment = _pandoc(pandoc, ['--from=json', '--to=html5'], encode(transformed)).decode()

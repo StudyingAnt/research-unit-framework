@@ -1,7 +1,5 @@
-# Local Computation and Repositories
+# Project Compute
 
-Resolve actual project/repository roots and entry points from this project.
-Preserve analysis repositories independently of reusable packages. An analysis
-script may run directly and import installed packages. Environment provisioning
-and dependency updates are separate from ordinary scientific execution.
-Record commands, effective settings, source/environment identities and checks.
+Explicitly read `../.research-framework/docs/compute.md` for shared defaults.
+Record researcher-approved local settings and exceptions here. Preserve actual
+project paths, primary systems, scientific instructions and repository contracts.

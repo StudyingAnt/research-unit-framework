@@ -34,7 +34,7 @@ def configuration(store):
     raw = store.read('framework-project.json', 1024 * 1024)
     if raw.data is None: raise ValidationError('Project configuration is missing')
     result = decode(raw.data)
-    if result.get('schema_version') != 1 or type(result.get('paths')) is not dict:
+    if type(result) is not dict or type(result.get('schema_version')) is not int or result['schema_version'] != 1 or type(result.get('paths')) is not dict:
         raise ValidationError('Unsupported project configuration')
     paths = result['paths']
     if set(paths) != {'plans', 'reports', 'analyses', 'manuscripts'}:
@@ -46,6 +46,9 @@ def configuration(store):
         if path.split('/')[0] in {'.research-framework', 'tools', 'templates'}:
             raise ValidationError('Scientific path maps into framework-owned state')
     result['paths'] = dict(paths)
+    reporting = result.get('reporting')
+    if type(reporting) is not dict or type(reporting.get('preview', False)) is not bool:
+        raise ValidationError('Reporting configuration and explicit preview boolean are required')
     return result
 
 
@@ -55,7 +58,7 @@ def registry_path(store):
 
 def validate_registry(value):
     if (type(value) is not dict or set(value) != {'schema_version', 'revision', 'records'}
-            or value['schema_version'] != 1 or type(value['revision']) is not int or value['revision'] < 0
+            or type(value['schema_version']) is not int or value['schema_version'] != 1 or type(value['revision']) is not int or value['revision'] < 0
             or type(value['records']) is not list or len(value['records']) > 10000):
         raise ValidationError('Invalid scientific ID registry')
     seen = set()
@@ -193,8 +196,7 @@ def adopt_record(project, kind, title, body, decision, parent=None, links=(), id
         store.create(operation + '/' + record['sha256'] + '.md', content)
         _replace(store, registry_path(store), encode(registry), before)
         _checkpoint('reserved')
-        _resume(store, identity)
-        return record
+        return _resume(store, identity)
 
 
 def _resume(store, identity):

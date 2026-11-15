@@ -81,11 +81,40 @@ class RenderingTests(ReportTests):
         self.assertEqual(len(validate_report(self.project, UNIT_ID)['figures']), 3)
         result = render_report(self.project, UNIT_ID, 'REV001')
         self.assertEqual(len(result['files']), 6)
+        self.assertIn('width:85mm', (self.reports / 'en/report.html').read_text())
 
     def test_missing_font_and_external_or_missing_image_fail_explicitly(self):
         path = self.project / 'framework-project.json'; config = json.loads(path.read_text())
         config['reporting']['font_ko'] = None; path.write_text(json.dumps(config))
         with self.assertRaises(ValidationError): render_report(self.project, UNIT_ID, 'REV001')
+        self.assertFalse((self.reports / 'en/report.pdf').exists())
+
+    def test_remote_and_missing_image_assets_are_not_fetched(self):
+        for location in ('https://synthetic.invalid/figure.png', '../../../analyses/missing.png'):
+            sources(self.project)
+            for lang in ('en', 'ko'):
+                path = self.reports / lang / 'report.md'; path.write_text(path.read_text()+'\n![Synthetic image]('+location+')\n')
+            with self.assertRaises(ValidationError): render_report(self.project, UNIT_ID, 'REV001')
+            self.assertFalse((self.reports / 'en/report.pdf').exists())
+
+    def test_low_density_export_is_rejected(self):
+        from report_support import figure
+        from PIL import Image
+        figure(self.project)
+        path = self.project / 'analyses' / UNIT_ID / 'figures/synthetic.png'
+        with Image.open(path) as image: image.save(path.with_name('low.png'), dpi=(72,72))
+        path.write_bytes(path.with_name('low.png').read_bytes())
+        with self.assertRaises(ValidationError): validate_report(self.project, UNIT_ID)
+
+    def test_interrupted_build_can_be_recovered_without_later_work(self):
+        from research_program_framework.reports import report_recovery_plan, recover_report
+        def fail(event, index=None):
+            if event == 'published' and index == 1: raise KeyboardInterrupt()
+        with patch('research_program_framework.reports._checkpoint', fail):
+            with self.assertRaises(KeyboardInterrupt): render_report(self.project, UNIT_ID, 'REV001')
+        operation = next((self.project / '.research-framework/report-builds').iterdir()).name
+        plan = report_recovery_plan(self.project, operation)
+        self.assertEqual(recover_report(self.project, operation, plan['plan_digest'])['status'], 'ROLLED_BACK')
         self.assertFalse((self.reports / 'en/report.pdf').exists())
 
     def test_interrupted_output_publication_and_guarded_undo(self):
