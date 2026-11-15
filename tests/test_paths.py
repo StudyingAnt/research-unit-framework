@@ -21,7 +21,7 @@ class PathTests(PayloadCase):
         for value in ['', '.', '..', '/escape', 'a/../b', 'a/./b', 'a//b', 'a/',
                       r'a\b', 'X:/escape', r'X:\escape', '//server/share', 'a:b',
                       'a\x00b', 'a\nb', 'a\tb', 'a%2fb', 'file ', 'file.',
-                      '.git/config', 'a/.GIT/config', '.hg/x', '.svn/x',
+                      '.git/config', 'a/.GIT/config', '.gitmodules', '.gitconfig', '.hg/x', '.svn/x',
                       'DEVELOPMENT_CONTEXT.local.md', 'CON', 'nul.txt', 'AUX', 'com1.py',
                       'LPT9.log', '\u202eabc', 'caf\u00e9.md', '\ud800', 'a' * 256,
                       '/'.join(['a'] * 129), 'a/' * 2049 + 'x', None, 7]:

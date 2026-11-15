@@ -80,7 +80,7 @@ class ManifestTests(PayloadCase):
 
     def test_root_bridges_and_local_settings_are_seeds(self):
         for path in ['AGENTS.md', 'CLAUDE.md', 'README.md', 'REPORT_TEMPLATE.md',
-                     'framework-project.json', 'docs/hpc.md', 'PROJECT_INSTRUCTIONS.md']:
+                     'framework-project.json', 'docs/hpc.md', 'PROJECT_INSTRUCTIONS.md', '.gitattributes']:
             with self.subTest(path=path):
                 with self.assertRaises(ValidationError):
                     validate_release_manifest(release([record(path, ownership='A')]))

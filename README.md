@@ -6,9 +6,9 @@ The framework supports experimental, computational, theoretical, observational, 
 
 ## Current implementation boundary
 
-**Phase 2: observed legacy baseline, release manifest definitions/validation, secure path/file validation, and automated tests.** Phase 1 architecture, ownership, and specification alignment are approved. The implemented components are read-only Python primitives, two structural schemas, and an exact reviewed v0.5 snapshot. See [manifest and path validation](docs/MANIFESTS_AND_PATHS.md) for the API, tests, and limits.
+**Phase 3: guarded updates for existing registered installations.** The implementation now includes in-memory planning/three-way merging, conflict detection, verified backups/staging, transaction journals, failure recovery, stale-plan checks, and guarded rollback. It reuses the Phase 2 manifest/path validators and exact reviewed v0.5 snapshot. See [the update engine](docs/UPDATE_ENGINE.md) for the API, tests, and limits.
 
-No current v1.1 starter, installed runtime archive, CLI, installer, updater, migration, backup/rollback engine, report builder, CI workflow, or release is implemented. Phase 3, project mutation, Git commits, pushes, tags, and publication remain unauthorized.
+No current v1.1 starter, runtime archive, CLI, project initializer, v0.5 migration, report builder, CI workflow, or release is implemented. Phase 3 tests use temporary synthetic projects. Protected reference mutations, Phase 4, Git commits, pushes, tags, and publication remain unauthorized.
 
 ## Documents
 
@@ -20,6 +20,7 @@ No current v1.1 starter, installed runtime archive, CLI, installer, updater, mig
 | [Ownership and updates](docs/OWNERSHIP_AND_UPDATES.md) | File ownership, conflict handling, migration, backup, and rollback contract |
 | [Requirements traceability](docs/REQUIREMENTS_TRACEABILITY.md) | Requirement sources, future acceptance evidence, and current implementation status |
 | [Manifest and path validation](docs/MANIFESTS_AND_PATHS.md) | Implemented Phase 2 contracts, API, tests, and limitations |
+| [Safe update engine](docs/UPDATE_ENGINE.md) | Phase 3 planning, backups, journaling, recovery, rollback, and limitations |
 | [Development instructions](AGENTS.md) | Agent scope, protected references, and phase gates |
 
 ## Checkout-local development context

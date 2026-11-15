@@ -1,7 +1,7 @@
 # File Ownership and Safe Updates
 
 **Decision date:** 2026-11-14  
-**Status:** Adopted policy; Phase 2 adds read-only validation, with mutation tooling deferred  
+**Status:** Adopted policy; Phase 3 implements guarded updates/recovery for registered installations  
 **Related contracts:** [Architecture](ARCHITECTURE.md), [primary specification](RESEARCH_PROGRAM_FRAMEWORK_v1.1.md), [requirements traceability](REQUIREMENTS_TRACEABILITY.md)
 
 This policy governs future initialization, framework upgrades, migration, and recovery. It does not authorize any operation against a project. An operation must stay within the user's named project and approved scope. Reference projects designated by the user or checkout-local development context remain strictly read-only; their locations belong only in that Git-excluded context.
@@ -137,4 +137,4 @@ Do not move or rename existing units, repositories, output directories, primary 
 
 Later automated acceptance must exercise every merge decision, unmanaged collisions, local deletions, unknown bases, failed backups, interrupted writes, concurrent edits, path/link attacks, state corruption, repeat invocation, and guarded rollback using synthetic projects. Preservation checks cover scientific records, local instructions/configuration, independent Git contents/history, untracked files, and unrelated paths.
 
-Phase 1 adopted this policy and checked its consistency with the architecture and bilingual specifications. Phase 2 preserves the reviewed generic baseline and implements read-only manifest/path/file validation with component tests. It creates no installation metadata and implements none of the initialization, upgrade, migration, merge application, backup, or rollback operations governed here.
+Phase 1 adopted this policy and Phase 2 preserved the reviewed baseline and implemented validators. Phase 3 implements read-only update plans, in-memory merging, verified backup/staging, journaled application, recovery, and guarded rollback for already registered installations. It preserves B/C/D records, including deleted seeds, and implements neither initialization nor metadata-free migration. See the [engine contract and validation evidence](UPDATE_ENGINE.md) for the actual guarantees and limitations. Reference projects remain strictly read-only.

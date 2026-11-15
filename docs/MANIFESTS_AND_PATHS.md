@@ -1,6 +1,6 @@
 # Phase 2 Manifest and Path Validation
 
-**Status:** Implemented read-only primitives; no installer, updater, migration, rollback, CLI, or release builder  
+**Status:** Phase 2 validation primitives retained; Phase 3 update/recovery operations are documented separately  
 **Contracts:** [Architecture](ARCHITECTURE.md), [ownership policy](OWNERSHIP_AND_UPDATES.md), [requirements traceability](REQUIREMENTS_TRACEABILITY.md)
 
 ## 1. Definitions and authority
@@ -35,7 +35,7 @@ Filesystem inspection on Linux/WSL opens every root and parent component with di
 
 Format/resource bounds are explicit: at most 10,000 files per manifest, 2 MiB of manifest JSON, 256 characters for version identifiers, 4,096 characters per relative path, 255 per component, and 128 components. Byte sizes are integers up to `2**53 - 1`; booleans and floats are invalid. Filesystem verification defaults to at most 64 MiB per file and 256 MiB total, with explicit caller-supplied limits available. These are payload validation bounds, not scientific-report length restrictions.
 
-Verification is an observed, read-only check, not a globally atomic snapshot of an actively hostile filesystem. It detects tested link replacements, in-read modifications, and changes to an earlier file during later hashes. A future mutation engine must revalidate at its write boundary. Archive parsing/extraction, plan application, trusted signature verification, environment setup, and project migration are not implemented.
+Verification is an observed, read-only check, not a globally atomic snapshot of an actively hostile filesystem. It detects tested link replacements, in-read modifications, and changes to an earlier file during later hashes. Phase 3 reuses these primitives and revalidates at mutation boundaries; [the engine contract](UPDATE_ENGINE.md) defines those operations. No-atime file/directory reads now suppress access-time changes and fail closed when unsupported or denied. Archive extraction, trusted signature verification, environment setup, initialization, and v0.5 migration remain unimplemented.
 
 ## 3. API and validation workflow
 
@@ -65,6 +65,6 @@ The source import path is for development tests only; it creates no installation
 
 The core suite needs only the standard library. When `jsonschema` is already available, an optional test independently checks both structural schemas and valid/invalid examples using its Draft 2020-12 validator; otherwise that cross-check is explicitly skipped. Do not install dependencies automatically.
 
-At this checkpoint the suite has 40 tests: 39 pass and 1 actual AF_UNIX socket test is skipped because the execution sandbox rejects `bind`. A separate socket-metadata rejection test passes; actual FIFO, symlink/hardlink, case/prefix collision, permission, hash/inventory, malformed JSON, resource-limit, and observed-race cases run. Verification was performed with the existing Python 3.9.18 environment, without environment configuration changes. This is an observed test environment, not a release-wide compatibility matrix.
+At the Phase 2 checkpoint the suite had 40 tests: 39 passed and 1 actual AF_UNIX socket test was skipped because the execution sandbox rejects `bind`. A separate socket-metadata rejection test passed; actual FIFO, symlink/hardlink, case/prefix collision, permission, hash/inventory, malformed JSON, resource-limit, and observed-race cases ran. These tests remain in the current combined suite described in [the engine contract](UPDATE_ENGINE.md). The environment remains Python 3.9.18 without configuration changes; this is not a release-wide compatibility matrix.
 
-Remaining release questions are license/reuse terms, publisher trust and compatibility policy, and later archive/install/migration/recovery behavior. Phase 2 does not resolve them by inventing a release or proceeding to Phase 3.
+Remaining release questions include license/reuse terms, publisher trust and compatibility policy, and later archive/initialization/migration behavior. Phase 3 implements guarded registered-installation recovery, not a release or metadata-free migration.

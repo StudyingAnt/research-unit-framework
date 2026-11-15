@@ -25,7 +25,7 @@ MAX_TOTAL_BYTES = 256 * 1024 * 1024
 COMPONENT_PATTERN = r"[A-Za-z0-9_.-]+"
 _COMPONENT = re.compile(COMPONENT_PATTERN, re.ASCII)
 _DEVICE = re.compile(r"(?:CON|PRN|AUX|NUL|COM[0-9]|LPT[0-9])(?:\..*)?", re.I)
-_FORBIDDEN = {".git", ".hg", ".svn", "development_context.local.md"}
+_FORBIDDEN = {".git", ".gitmodules", ".gitconfig", ".hg", ".svn", "development_context.local.md"}
 
 
 def validate_relative_path(value: str) -> str:
@@ -77,18 +77,23 @@ class FileFingerprint:
 
 
 def _signature(info: os.stat_result) -> tuple:
-    # Exclude access time: read-only verification may update it on some mounts.
+    # Access time is not content identity; no-atime descriptors suppress updates.
     return (info.st_dev, info.st_ino, info.st_mode, info.st_nlink,
             info.st_size, info.st_mtime_ns, info.st_ctime_ns)
 
 
-def _directory_flags() -> int:
+def _directory_flags(no_atime: bool = False) -> int:
     if (os.name != "posix" or not hasattr(os, "O_NOFOLLOW")
             or os.open not in os.supports_dir_fd
             or os.stat not in os.supports_dir_fd or os.listdir not in os.supports_fd
             or os.scandir not in os.supports_fd):
         raise ValidationError("Secure filesystem validation requires POSIX descriptor support")
-    return os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_CLOEXEC
+    flags = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_CLOEXEC
+    if no_atime:
+        if not hasattr(os, 'O_NOATIME'):
+            raise ValidationError('Side-effect-free reads require Linux O_NOATIME support')
+        flags |= os.O_NOATIME
+    return flags
 
 
 @contextmanager
@@ -104,6 +109,11 @@ def _open_root(root: Path) -> Iterator[int]:
             child = os.open(part, flags, dir_fd=fd)
             os.close(fd)
             fd = child
+        # Ancestors are only opened, never listed. Suppress access-time updates
+        # on the actual root and every directory/file subsequently read.
+        child = os.open('.', _directory_flags(no_atime=True), dir_fd=fd)
+        os.close(fd)
+        fd = child
         yield fd
     except OSError as exc:
         raise ValidationError("Cannot inspect payload root safely") from exc
@@ -117,7 +127,7 @@ def _open_parent(root_fd: int, relative: str) -> Iterator[tuple[int, str]]:
     try:
         parts = validate_relative_path(relative).split("/")
         for part in parts[:-1]:
-            child = os.open(part, _directory_flags(), dir_fd=fd)
+            child = os.open(part, _directory_flags(no_atime=True), dir_fd=fd)
             os.close(fd)
             fd = child
         yield fd, parts[-1]
@@ -140,7 +150,7 @@ def _read_file(root_fd: int, relative: str, max_bytes: int,
             raise ValidationError(f"Unsupported payload file permissions: {relative!r}")
         if before.st_size > max_bytes:
             raise ValidationError(f"Payload file exceeds byte limit: {relative!r}")
-        flags = os.O_RDONLY | os.O_NOFOLLOW | os.O_CLOEXEC | os.O_NONBLOCK
+        flags = os.O_RDONLY | os.O_NOFOLLOW | os.O_CLOEXEC | os.O_NONBLOCK | os.O_NOATIME
         fd = os.open(name, flags, dir_fd=parent)
         try:
             opened = os.fstat(fd)
@@ -203,7 +213,7 @@ def _walk(fd: int, allowed: set[str], prefix: str = "") -> tuple[set[str], set[s
         info = os.stat(name, dir_fd=fd, follow_symlinks=False)
         signatures[relative] = _signature(info)
         if stat.S_ISDIR(info.st_mode):
-            child = os.open(name, _directory_flags(), dir_fd=fd)
+            child = os.open(name, _directory_flags(no_atime=True), dir_fd=fd)
             try:
                 if _signature(info) != _signature(os.fstat(child)):
                     raise ValidationError(f"Payload directory changed: {relative!r}")

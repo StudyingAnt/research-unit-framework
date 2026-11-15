@@ -1,11 +1,11 @@
 # Framework v1.1 Requirements Traceability
 
 **Date:** 2026-11-14  
-**Checkpoint:** Phase 2 read-only validation components
+**Checkpoint:** Phase 3 guarded update/recovery engine
 
-Sources are the [primary English specification](RESEARCH_PROGRAM_FRAMEWORK_v1.1.md), [Korean companion](RESEARCH_PROGRAM_FRAMEWORK_v1.1_ko.md), the researcher's architecture/migration request and detailed reporting requirements, and the explicit Phase 1 and Phase 2 authorizations. The [architecture](ARCHITECTURE.md) and [ownership policy](OWNERSHIP_AND_UPDATES.md) record adopted engineering decisions. [Development instructions](../AGENTS.md) enforce the current work boundary.
+Sources are the [primary English specification](RESEARCH_PROGRAM_FRAMEWORK_v1.1.md), [Korean companion](RESEARCH_PROGRAM_FRAMEWORK_v1.1_ko.md), the researcher's architecture/migration request and detailed reporting requirements, and the autonomous authorization for Phases 3 through 10. The [architecture](ARCHITECTURE.md) and [ownership policy](OWNERSHIP_AND_UPDATES.md) record adopted engineering decisions. [Development instructions](../AGENTS.md) enforce the current work boundary.
 
-All requirements below are specified. Phase 2 implements only the reviewed v0.5 baseline, release manifest definitions/validation, secure path/file inspection, and tests identified below. It does not establish that starter, updater, migration, rollback, reporting, or release-building software works. The reference projects' prior capabilities are not an installed v1.1 implementation here.
+All requirements below are specified. Phase 2 delivered the reviewed baseline and validators. Phase 3 implements update plans, text merging, verified backups, journaled application/recovery, and guarded rollback for existing registered installations, with the evidence below. Initialization, v0.5 migration, scientific-record workflows, reporting, and release building remain later work. The reference projects' prior capabilities are not an installed v1.1 implementation here.
 
 ## 1. Scientific and governance requirements
 
@@ -50,7 +50,7 @@ All requirements below are specified. Phase 2 implements only the reviewed v0.5 
 | R27 | Backup, interrupted-operation recovery, guarded rollback | Verified affected-set backups, journals, final state recorded last, post-state guards protecting later edits, no recursive project reset |
 | R28 | v0.5 migration without installation metadata | Provenance-recorded observed baseline, conservative unknown-base handling, reviewed ownership adoption, no reorganization or scientific/report regeneration |
 | R29 | Automated verification and release management | Synthetic fixtures and failure tests; archive-based initialization/migration/upgrade checks; manual acceptance boundaries; license/reuse and dependency support verified before related release claims |
-| R30 | Incremental authorization and read-only references | Phase 1 and portability are approved; Phase 2 authorizes reviewed legacy preservation, manifest/path/file validation, and their tests only. No Phase 3, updater/migration/rollback implementation, reference-tree mutation, commit, push, tag, or publication; stop for review |
+| R30 | Incremental authorization and read-only references | Autonomous Phases 3–10 authorization; original reference remains read-only, active target changes only in the final validated migration. Logical commits and privacy-reviewed pushes are authorized; no forced history changes or premature final release |
 
 ## 4. Phase 1 change boundary and validation
 
@@ -83,4 +83,17 @@ These remain historical Phase 1 evidence, not a prohibition on the subsequently 
 | R29: component tests | Synthetic temporary projects, malformed input and filesystem/race cases, observed baseline integrity, optional independent JSON Schema check | No end-to-end installer/update/migration/rollback, rendering, or release validation |
 | R30: authorization and privacy | Root phase instructions updated; local context remains Git-excluded, protected references read-only, no active-project content copied | Stop after Phase 2; no commit/push or Phase 3 |
 
-See [manifest and path validation](MANIFESTS_AND_PATHS.md) for the format, run command, actual test results, and unresolved limits. The current result is 40 tests, 39 passing and one actual socket-creation test skipped due to sandbox policy; socket-type rejection is separately tested. Later requirements remain specified and unimplemented until their phases are authorized.
+See [manifest and path validation](MANIFESTS_AND_PATHS.md) for the format and historical Phase 2 result: 40 tests, 39 passing and one sandbox-restricted socket test skipped. Socket-type rejection was separately tested. The phase-specific limits above describe that checkpoint; Phase 3 adds the following capabilities.
+
+## 6. Phase 3 implementation and evidence
+
+| Requirement subset | Implemented evidence | Limit |
+|---|---|---|
+| R24, R26: ownership and planning | In-memory B/L/N plans, content/mode comparison, disjoint line merging, unresolved-conflict refusal, explicit registered-file resolutions, immutable D seeds, unmanaged-collision and ownership-transition rejection | Existing registered canonical paths only; no configuration rewriting, layout remapping, initialization, or metadata-free adoption |
+| R26: dry-run and stale-plan checks | No-atime descriptor reads, exact payload revalidation, immutable plans bound to root/receipt/file/parent/source state, fresh-plan recomputation under lock | Linux/WSL with sufficient no-atime permissions; no global snapshot guarantee |
+| R27: backup, journal, and failure recovery | Verified complete backups and after-images, durable per-file intent/results, exact new upstream objects, receipt finalized last, automatic guarded recovery on ordinary failure, explicit interruption recovery | Single filesystem, trusted manager state and cooperating writers; corrupt/unknown states require inspection |
+| R27: guarded rollback | Whole affected-set preflight, later edit/mode/identity checks, protected operation-added files/directories, resumable restoration, receipt restored last, proven child-rollback lineage | No force overwrite, recursive reset, backup pruning, or scientific-record recovery |
+| R29: tests | 103 combined tests: 102 pass, one sandbox-restricted actual socket test skipped; synthetic conflict, interruption, retired-seed ownership, backup/stage tampering, path/metadata replacement, rollback/local-edit, and no-atime cases | No real deployment or power-loss/hardware durability certification; unsupported ownership/ACL/xattrs fail closed; socket-type rejection separately covered |
+| R30: scope and preservation | Phase instructions updated, scientific specifications and observed baseline unchanged, protected references remain read-only | Subsequent phases proceed under the autonomous completion authorization |
+
+The [update engine contract](UPDATE_ENGINE.md) documents the exact API, consumed receipt format, tests, and remaining platform/concurrency limits. Later scientific and deployment requirements are authorized and remain pending implementation at this checkpoint.

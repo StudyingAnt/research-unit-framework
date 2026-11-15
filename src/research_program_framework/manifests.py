@@ -116,7 +116,7 @@ def _release_role(item: ReleaseFile) -> None:
     parts = item.path.split('/')
     seeds = {
         'AGENTS.md', 'CLAUDE.md', 'REPORT_TEMPLATE.md', 'README.md',
-        'PROJECT_INSTRUCTIONS.md', 'framework-project.json', '.gitignore',
+        'PROJECT_INSTRUCTIONS.md', 'framework-project.json', '.gitignore', '.gitattributes',
         'docs/figure_style.md', 'docs/compute.md', 'docs/hpc.md',
     }
     scientific_roots = {'analyses', 'reports', 'data', 'resources', 'envs', 'notes', 'repos', 'coordination'}

@@ -1,1 +1,1 @@
-"""Read-only manifest and payload validation primitives for the framework."""
+"""Framework validation and guarded updates; no initialization or legacy migration."""

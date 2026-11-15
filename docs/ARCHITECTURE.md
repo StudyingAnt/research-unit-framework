@@ -1,7 +1,7 @@
 # Framework v1.1 Architecture
 
 **Decision date:** 2026-11-14  
-**Status:** Adopted architecture; Phase 2 read-only validation components implemented  
+**Status:** Adopted architecture; Phase 3 guarded update engine implemented  
 **Scientific authority:** [Primary specification](RESEARCH_PROGRAM_FRAMEWORK_v1.1.md), with [Korean companion](RESEARCH_PROGRAM_FRAMEWORK_v1.1_ko.md)
 
 This document records the approved architecture. Future paths and operations describe required implementation, not working software. [Ownership and updates](OWNERSHIP_AND_UPDATES.md) is the normative mutation contract; [requirements traceability](REQUIREMENTS_TRACEABILITY.md) identifies later acceptance evidence.
@@ -41,7 +41,7 @@ research-unit-framework/
 └── .github/workflows/                # Future verification and artifact builds
 ```
 
-Phase 2 adds the reviewed historical baseline, manifest/path validation source, two structural schemas, and component tests. Remaining paths in this target tree describe later work, not completed tooling. The local context is checkout-only developer information, not framework installation metadata or release payload. Shared documents and release artifacts contain generic policies without workstation-specific paths or local research project names. Do not create remaining future directories merely to make the tree look implemented.
+Phase 2 added the reviewed historical baseline, validators, schemas, and tests. Phase 3 adds update planning/merging, descriptor-anchored storage, journaled application, recovery, rollback, and synthetic integration tests. Remaining paths in this target tree describe later work, not completed tooling. The local context is checkout-only developer information, not framework installation metadata or release payload. Shared documents and release artifacts contain generic policies without workstation-specific paths or local research project names. Do not create remaining future directories merely to make the tree look implemented.
 
 Maintain one editable starter source. A tagged source revision and its verified release archives define a versioned starter; do not maintain independently edited copies for every release. Compatibility snapshots are immutable migration ancestors with recorded provenance, not alternative current starters. Starter v3 is a distribution name; its framework version is v0.5.
 
@@ -140,7 +140,7 @@ Before changing HPC workflows or instructions in a development checkout, follow 
 
 Initialization creates a selected release only after checking the destination and planned ownership. It does not initialize scientific Git repositories, clone software, install environments, or decide research direction. Existing nonempty destinations use inspected migration/merge plans rather than directory overlays.
 
-Upgrade uses a verified release manifest, the exact previous upstream ancestor, the local file, and the new upstream file. Dry-run produces a read-only plan. Explicit application rechecks its preconditions, preserves local edits, rejects unresolved conflicts, backs up affected files, journals staged writes, and commits installation state last. Guarded rollback protects later edits. These are implementation requirements, not available Phase 1 functionality.
+Upgrade uses a verified release manifest, the exact previous upstream ancestor, the local file, and the new upstream file. Dry-run produces a read-only plan. Explicit application rechecks its preconditions, preserves local edits, rejects unresolved conflicts, backs up affected files, journals staged writes, and commits installation state last. Guarded rollback protects later edits. Phase 3 implements these operations for existing registered installations; the [engine contract](UPDATE_ENGINE.md) records the exact API, tested bounds, and recovery guarantees. No initialization or metadata-free adoption is implied.
 
 Metadata-free v0.5 adoption uses a separately reviewed migration plan. Preserve existing layout, AST IDs, reports, results, research instructions, configuration, repositories, and untracked files. Record observed legacy baseline provenance without inventing historical installation metadata. Unknown ancestors require conservative manual resolution. Keep local reporting improvements; do not automatically regenerate reports or write a scientific Research Map.
 
@@ -159,7 +159,8 @@ Separate specification version `1.1`, future implementation release versions suc
 | Phase | Work boundary | Current state |
 |---|---|---|
 | 1 | Architecture, ownership policy, development instructions, specification reconciliation, requirements traceability | Approved, including the portability follow-up; committed/pushed by the researcher |
-| 2 | Observed legacy baseline, manifests, secure path/file validation, and component tests | Authorized and implemented; see component validation evidence |
-| Later phases | Safe mutation/recovery, initialization, migration, scientific records, reporting, handoffs, release validation | Not started; authorize and validate one phase at a time |
+| 2 | Observed legacy baseline, manifests, secure path/file validation, and component tests | Complete and committed by the researcher |
+| 3 | Read-only plans, merging/conflicts, backups, journaling, recovery, guarded rollback, and safety tests | Authorized and implemented; see engine validation evidence |
+| Later phases | Initialization, v0.5 migration, scientific records, reporting, handoffs, release validation | Not started; authorize and validate one phase at a time |
 
-After Phase 2 validation, stop for review. The [component contract and test results](MANIFESTS_AND_PATHS.md) state what is actually verified. Do not begin Phase 3 or implement updater, migration, or rollback operations. Approval of the architecture is distinct from authorization for a phase, mutation of an active project, commit, push, tag, or publication.
+After Phase 3 validation, stop for review. The [engine contract and test results](UPDATE_ENGINE.md) state what is actually verified. Do not begin Phase 4, initialize a project, or implement v0.5 migration. Approval of the architecture is distinct from authorization for a phase, mutation of an active project, commit, push, tag, or publication.
