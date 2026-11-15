@@ -1,41 +1,48 @@
-"""Synthetic fixtures; never read or mutate local scientific projects."""
-
-import hashlib
+"""Isolated synthetic projects; no real scientific content or reference writes."""
 from pathlib import Path
+import json
+import os
+import shutil
+import sys
 import tempfile
 import unittest
 
-from research_program_framework.paths import FileFingerprint
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / 'tools'))
+sys.path.insert(0, str(ROOT / 'template/tools'))
+from _framework import create_project, plan_update, apply_update
+from project_common import encode
 
 
-def record(path='templates/report.en.md', data=b'Synthetic template\n', **extra):
-    return {'path': path, 'size': len(data), 'sha256': hashlib.sha256(data).hexdigest(),
-            'mode': '0644', **extra}
+def contents(root):
+    return {p.relative_to(root).as_posix(): p.read_bytes() for p in root.rglob('*') if p.is_file()}
 
 
-def release(files=None):
-    return {'schema_version': 1, 'kind': 'framework_release', 'framework_version': '1.1.0-rc.1',
-            'specification_version': '1.1', 'source_revision': '1' * 40,
-            'files': files if files is not None else [record(ownership='A')]}
-
-
-def legacy(files=None):
-    return {'schema_version': 1, 'kind': 'legacy_baseline', 'framework_version': '0.5',
-            'distribution': 'Starter v3', 'observed_on': '2026-11-14', 'source_revision': None,
-            'content_review': 'reviewed_generic', 'files': files if files is not None else [record()]}
-
-
-class PayloadCase(unittest.TestCase):
+class ProjectCase(unittest.TestCase):
     def setUp(self):
-        self.temporary = tempfile.TemporaryDirectory()
+        self.temporary = tempfile.TemporaryDirectory(prefix='rpf-v2-test-')
         self.addCleanup(self.temporary.cleanup)
         self.root = Path(self.temporary.name)
-        self.payload = self.root / 'payload'
-        self.payload.mkdir()
+        self.source = self.root / 'source'
+        self.source.mkdir()
+        shutil.copytree(ROOT / 'template', self.source / 'template', ignore=shutil.ignore_patterns('__pycache__'))
+        shutil.copyfile(ROOT / 'template-manifest.json', self.source / 'template-manifest.json')
+        self.project = self.root / 'project'
+        create_project(self.project, self.source)
 
-    def write(self, path='templates/report.en.md', data=b'Synthetic template\n', mode=0o644):
-        target = self.payload / path
-        target.parent.mkdir(parents=True, exist_ok=True)
-        target.write_bytes(data)
-        target.chmod(mode)
-        return FileFingerprint(**{**record(path, data), 'mode': f'{mode:04o}'})
+    def source_file(self, path, content):
+        p = self.source / 'template' / path
+        p.parent.mkdir(parents=True, exist_ok=True)
+        p.write_bytes(content)
+
+    def bump(self, version='2.0.1'):
+        p = self.source / 'template-manifest.json'
+        value = json.loads(p.read_text()); value['version'] = version; p.write_bytes(encode(value))
+
+    def add_managed(self, path, content):
+        self.source_file(path, content)
+        p = self.source / 'template-manifest.json'
+        value = json.loads(p.read_text()); value['managed'].append(path); p.write_bytes(encode(value))
+
+    def plan(self, **kwargs):
+        return plan_update(self.project, self.source, **kwargs)

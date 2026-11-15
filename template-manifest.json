@@ -1,0 +1,22 @@
+{
+  "format": 2,
+  "version": "2.0.0",
+  "managed": [
+    "AGENTS.md",
+    "CLAUDE.md",
+    "REPORT_TEMPLATE.md",
+    "coordination/COORDINATION.md",
+    "docs/figure_style.md",
+    "docs/hpc.md",
+    "templates/aim.md",
+    "templates/manuscript.md",
+    "templates/report.en.md",
+    "templates/report.ko.md",
+    "templates/run.md",
+    "templates/workstream.md",
+    "tools/build_reports.py",
+    "tools/new_unit.py",
+    "tools/project_common.py",
+    "tools/report.css"
+  ]
+}

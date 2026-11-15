@@ -3,7 +3,8 @@
 **Version:** 1.1 (generalized life-sciences edition; design specification)  
 **Date:** 2026-11-13  
 **Reporting revision:** 2026-11-14 (researcher-approved scientific reporting requirements)  
-**Status:** Adopted design specification; implementation proceeds only by approved phase  
+**Status:** Adopted scientific specification; retained by the template-first 2.0 baseline
+
 **Audience:** Researchers and research groups in experimental, computational, theoretical, and integrative life sciences  
 **Compatibility:** Tool-agnostic; usable with human collaborators and AI coding/research agents
 
@@ -315,9 +316,14 @@ The framework does not waive discipline-specific oversight. Relevant animal, hum
 
 The normal user interface may be a project-root session in a coding assistant, an IDE, or another suitable tool. The researcher should not have to remember folder-creation commands, report-generation commands, or internal ID-allocation scripts.
 
-### 8.1 Program-level planning conversation
+### 8.1 Coordination: program-level planning conversation
 
 Discuss Narrative, Workstreams, Aims, or manuscripts. The agent can read prior reports, identify gaps, and draft alternatives. **Do not create an AST unit solely because a planning discussion occurred.** Strategic changes are saved as adopted decisions only after researcher confirmation.
+
+Coordination and AST sessions communicate through persistent project files, not
+direct chat access. No mandatory cross-session message, summary document or
+automatic chat handoff is required. An AST may revise its report repeatedly; a new
+AST is needed only for a substantively distinct evidence-producing task.
 
 ### 8.2 First unit in a new program
 
@@ -547,9 +553,11 @@ The same AST and scientifically complete reporting contract applies in all three
 | **v1.0** | Research program design: human-owned Narrative, Workstream mapping, AST unit identity, manuscript separation, program-level decision rights. |
 | **v1.1 (this document)** | **Generalizes Workstreams and evidence production across life sciences:** experimental, computational, theoretical, observational, and integrated methodologies; removes laboratory-specific illustrations; recognizes primary experimental records and authorization boundaries. |
 
-**Implementation boundary:** v1.1 is a **design document**. It does not claim that an earlier starter ZIP, `AGENTS.md`, `REPORT_TEMPLATE.md`, scripts, or program files have already been upgraded. Operational files must be implemented and tested in separately authorized phases. Existing structure and established repositories remain unchanged by the document alone.
-
-**Reporting revision, 2026-11-14:** The researcher approved the overall architecture and the detailed scientific reporting requirements. Section 10 now requires methodological completeness, eleven report sections, paired language equivalence, and no page-count target or limit. This supersedes the previous length recommendation. Phase 1 establishes development instructions, architecture, ownership policy, and specification alignment only; runtime, starter, migration, and update implementation remain later work requiring phase authorization. See [requirements traceability](REQUIREMENTS_TRACEABILITY.md).
+**Implementation baseline:** Release 2.0 retains this scientific design and the
+2026-11-14 detailed reporting revision. Its template-first architecture supersedes
+the earlier installation, compatibility and phase-by-phase development design.
+No automatic conversion of existing projects or historical research is required.
+See [architecture](ARCHITECTURE.md) and [requirements traceability](REQUIREMENTS_TRACEABILITY.md).
 
 ### Adoption without restructuring
 

@@ -1,92 +1,108 @@
-# Research Program Framework v1.1
+# Research Program Framework
 
-Researcher-directed life-science program records, detailed bilingual scientific
-reporting, and guarded framework administration. Scientific authority is the
-[English specification](docs/RESEARCH_PROGRAM_FRAMEWORK_v1.1.md), with its
-[Korean companion](docs/RESEARCH_PROGRAM_FRAMEWORK_v1.1_ko.md).
+A lightweight template for researcher-directed life-science projects. Browse
+[`template/`](template/) to see the project you will get: Markdown operating
+instructions, Coordination plans, stable Aim/Strategy/Tactic (AST) work, detailed
+English/Korean reports and a few practical Python scripts.
 
-The implementation supports Narrative, flexible Workstreams, Aim/Strategy/Tactic
-and material Specifications, optional Runs, a Research Map and stable ID registry,
-manuscript evidence integration, durable handoffs and human-operated HPC workflows.
-Experimental, computational, theoretical, observational and hybrid work share the
-same governance. Scientific repositories remain independent; no project-root Git
-repository or installable analysis package is required.
+**2.0 is a new baseline.** It retains the scientific design of v1.1, with no
+backward-compatibility or automatic conversion for earlier installations.
+Existing research can stay where it is; historical material can be consulted
+individually when useful. Earlier releases remain in Git history.
 
-## Use a release
+## Create a project
 
-Core administration requires Python 3.9+ on Linux/WSL. Download and verify a
-trusted release archive, then extract it into its own directory. Never overlay
-it onto an existing research project. The standalone newproj zip application
-also embeds the starter and works without this development checkout.
+Python 3.9+ on Linux/WSL is sufficient for project creation and updates. Clone or
+extract a release, then put its root on your PATH once:
 
 ```bash
-python3 /absolute/release/newproj.pyz new /absolute/new/project
-python3 /absolute/project/.research-framework/runtime.pyz inspect /absolute/project
-python3 /absolute/project/.research-framework/runtime.pyz --help
+export PATH="/absolute/path/to/research-unit-framework:$PATH"
+newproj --configure ~/projects
+newproj my_research
 ```
 
-The new destination must be absent. Initialization creates no scientific IDs,
-adopted direction, environments, independent repositories or remote jobs.
-
-## Plan before existing-project changes
+Add the export to your shell configuration if you want it to persist. The
+configured parent defaults to `~/projects`; `RPF_PROJECTS_DIR` or `--projects-dir`
+can override it. An exact destination is also supported:
 
 ```bash
-python3 /absolute/release/newproj.pyz update-plan /absolute/project --release /absolute/release
-python3 /absolute/release/newproj.pyz update /absolute/project --release /absolute/release --plan-digest REVIEWED_DIGEST
+newproj my_research --destination /absolute/path/to/my_research
 ```
 
-Read-only plans create no files, locks or backups. Application rejects stale
-plans and unresolved conflicts, retains exact upstream ancestors and local edits,
-verifies backups before replacement, journals writes and finalizes metadata last.
-Guarded recovery/rollback protects later work. Unknown files and scientific records
-are preserved. See [ownership](docs/OWNERSHIP_AND_UPDATES.md) and
-[the update engine](docs/UPDATE_ENGINE.md) for guarantees and platform limits.
+Without changing PATH, use `python3 tools/newproj.py my_research` from this
+checkout. Creation refuses existing destinations and creates no Git repository,
+scientific environment, adopted research direction or invented AST records.
 
-Metadata-free Starter v3 / Framework v0.5 projects use the distinct
-[migration procedure](docs/MIGRATION.md), with inspected legacy ancestry,
-explicit conflict resolutions and external verified recovery storage. Existing
-reports, analyses, layouts, research instructions and Git histories are preserved.
-Framework administration never regenerates scientific reports.
+## Start Coordination
 
-## Scientific work and reporting
+Open the new project in your assistant and say:
 
-[Scientific record commands](docs/SCIENTIFIC_RECORDS.md) record explicit researcher
-approval references and preserve stable IDs/revisions. Program planning needs no
-AST unit; interrupted work resumes its existing identity. An agent cannot adopt
-a scientific direction or manuscript claim from a successful execution.
+> Start Coordination. Read the Research Map and relevant plans, examine the
+> current hypotheses and alternatives, and help me choose the next priorities.
 
-[Reporting](docs/REPORTING.md) produces corresponding EN/KO editable Markdown,
-HTML and PDF with eleven sections, manuscript-level methodological guidance,
-static math, publication-quality figure checks and preserved revisions. There
-are no arbitrary page-count limits. Optional rendering dependencies and actual
-font files are configured separately; scientific/bilingual review and visual
-inspection remain explicit requirements. Unsupported math/assets/fonts fail
-honestly. Table-only and completed NOT_EVALUATED evidence are supported.
+The assistant follows `AGENTS.md` and `coordination/COORDINATION.md`. Coordination
+can develop Narratives, flexible Workstreams, Aims, dependencies and manuscript
+evidence. It challenges weak arguments; only decisions you explicitly approve
+enter formal scientific records. Brainstorming does not automatically create an
+AST or adopt a hypothesis.
 
-[Execution and handoff tools](docs/EXECUTION_AND_HANDOFFS.md) distinguish intended,
-reconstructed, verified and unknown provenance. Humans retain remote access,
-submission, monitoring, transfers and physical/regulated operations. Command
-preparation does not execute remote work or provision environments.
+## Start or resume an AST session
 
-## Develop and validate
+Ask the assistant to read relevant plans and develop an Aim, Strategy, bounded
+Tactic question and detailed Specifications with you. After approval, it handles
+ID/folder administration with `tools/new_unit.py`. You do not need to memorize
+the helper commands. Interrupted work resumes the same `A###-S##-T##` identity.
+Repeat reporting revisions keep that AST; a substantively different
+evidence-producing task warrants a new one. Execution Runs (`R###`) are optional.
 
-Read [AGENTS.md](AGENTS.md) and any ignored checkout-local context explicitly.
-The original legacy reference is read-only. The active target remains read-only
-during development and can change only under the final validated migration
-conditions. Public sources, fixtures and releases contain generic content only.
+Sessions communicate through plans, reports and figures. There is no required
+cross-chat message, handoff summary or automatic chat transfer. Scientific code
+can live in independent repositories under `repos/`; physical research and remote
+HPC remain human-operated. No historical research import is required.
+
+## Produce reports
+
+The assistant fills the eleven-section EN/KO templates with actual scientific
+rationale, definitions, procedures, filters, calculations, controls, uncertainty,
+exact settings, figures/tables, findings, limitations and provenance. Methods must
+support manuscript preparation without opening code. **There are no page limits.**
+
+Markdown is editable; HTML and PDF are generated with a separately configured
+reporting environment (Pandoc plus `requirements/reporting.txt` and actual report
+fonts). The normal helper is `python tools/build_reports.py AST_ID --revision
+REV001` inside the project. Each revision preserves all six language/format
+outputs. Repeated revisions never overwrite earlier archives. Structural checks
+supplement explicit scientific, bilingual and HTML/PDF visual review.
+
+See [reporting setup and checks](docs/REPORTING.md) for the small configuration
+and figure declarations. Project settings and scientific reports belong to you.
+
+## Update a project
+
+After pulling/extracting the newer framework, preview changes with its tool:
 
 ```bash
-PYTHONPATH=src python3 -B -m unittest discover -s tests -q
-PYTHONPATH=src python3 -B -m research_program_framework audit-public
-PYTHONPATH=src python3 -B -m research_program_framework build-release dist/rc
+python3 tools/update_project.py /absolute/path/to/my_research
+python3 tools/update_project.py /absolute/path/to/my_research --apply
 ```
 
-See [architecture](docs/ARCHITECTURE.md), [requirements traceability](docs/REQUIREMENTS_TRACEABILITY.md),
-[acceptance evidence](docs/ACCEPTANCE.md), [release workflow](docs/RELEASE.md),
-and [installation](docs/INSTALLATION.md). Core tests use synthetic temporary
-projects. Actual rendering acceptance uses a separately selected environment;
-optional dependency absence is reported as a skip rather than a false pass.
+The first command is read-only. Updates compare the previous template, local
+file and current template. Unchanged managed files update; local modifications
+are preserved or merged when disjoint. Conflicts block the entire application.
+Verified affected-file backups are kept under the project's `.framework/backups/`.
+Reports, plans, data, independent repositories and project settings are never
+update targets. See [ownership, conflict resolution and backup use](docs/OWNERSHIP_AND_UPDATES.md).
 
-No license grant is supplied or inferred. Third-party fonts, scientific packages
-and research content are not bundled. The legacy snapshot is inert historical
-migration evidence, not current operating policy.
+The visible structure is deliberately small:
+
+```text
+template/       The single project template, including its tools and instructions
+tools/          Project creation, updates and release packaging
+newproj         Convenient creation command
+docs/          Scientific design and short operating/engineering references
+tests/         Synthetic project and reporting tests
+```
+
+Read [architecture](docs/ARCHITECTURE.md) for internals and [release notes](docs/RELEASE_NOTES.md)
+for the baseline change. No runtime archive, migration service or proprietary chat
+state is needed to browse or operate a project.

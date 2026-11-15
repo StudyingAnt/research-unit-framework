@@ -1,2 +1,2 @@
-# Independent structural-schema checks; administration itself is standard library.
-jsonschema>=4.18,<5
+# Core tests use only the Python standard library.
+# Install requirements/reporting.txt separately for renderer-enabled acceptance.

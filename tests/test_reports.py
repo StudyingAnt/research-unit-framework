@@ -1,155 +1,110 @@
-"""Report structure/revision guards; optional real renderer tests run separately."""
-
 import json
 import os
 from pathlib import Path
-import tempfile
+import subprocess
+import sys
 import unittest
-from unittest.mock import patch
 
-from research_program_framework.initialization import create_project
-from research_program_framework.release import build
-from research_program_framework.reports import validate_report, render_report, _safe_svg
-from research_program_framework.paths import ValidationError
-from report_support import sources, UNIT_ID
+from support import ProjectCase, ROOT, contents
+from new_unit import create_unit
+from build_reports import validate_report, render_report
+from report_support import UNIT_ID, sources, figure
 
 
-class ReportTests(unittest.TestCase):
-    def setUp(self):
-        self.temp = tempfile.TemporaryDirectory(); self.addCleanup(self.temp.cleanup)
-        self.root = Path(self.temp.name); self.project = self.root / 'project'
-        release = build(Path(__file__).resolve().parents[1], self.root / 'release')
-        create_project(self.project, self.root / 'release/payload', release)
-        self.reports = sources(self.project)
-
-    def test_full_table_only_report_has_no_figure_requirement(self):
-        result = validate_report(self.project, UNIT_ID)
-        self.assertEqual(result['figures'], [])
-        self.assertEqual(result['review_required'], ['visual'])
-
-    def test_no_page_or_word_count_gate(self):
-        sources(self.project, methods_repeat=20)
-        self.assertEqual(validate_report(self.project, UNIT_ID)['metadata']['status'], 'COMPLETED')
-
-    def test_missing_sections_placeholders_and_numeric_mismatch_refused(self):
-        path = self.reports / 'ko/report.md'; source = path.read_text()
-        for changed in (source.replace('section: methods', 'section: absent'), source+'\n{{MISSING}}', source.replace('2.5', '2.6')):
-            path.write_text(changed)
-            with self.assertRaises(ValidationError): validate_report(self.project, UNIT_ID)
-        path.write_text(source)
-
-    def test_completed_without_verdict_requires_reason(self):
-        path = self.reports / 'report.json'; value = json.loads(path.read_text()); value['outcome_reason'] = ''
-        path.write_text(json.dumps(value))
-        with self.assertRaises(ValidationError): validate_report(self.project, UNIT_ID)
-
-    def test_active_svg_content_rejected(self):
-        for data in (b'<svg onload="alert(1)"/>', b'<svg><image href="https://invalid.example/image"/></svg>', b'<!ENTITY x "bad"><svg/>'):
-            with self.assertRaises(ValidationError): _safe_svg(data)
-
-    def test_link_metadata_rejects_symlink_without_reading_large_files(self):
-        from research_program_framework.reports import _link_identity
-        repo = self.project / 'repos/synthetic-source'; (repo / '.git').mkdir(parents=True)
-        target = repo / 'large.bin'
-        with target.open('wb') as handle: handle.truncate(128 * 1024 * 1024)
-        self.assertIsNotNone(_link_identity(self.project, 'repos/synthetic-source/large.bin'))
-        (repo / 'alias.bin').symlink_to(target)
-        with self.assertRaises(ValidationError): _link_identity(self.project, 'repos/synthetic-source/alias.bin')
-
-
-@unittest.skipUnless(os.environ.get('RPF_RENDER_TESTS') == '1', 'Optional renderer acceptance requires an explicitly selected environment/fonts')
-class RenderingTests(ReportTests):
+class ReportChecks(ProjectCase):
     def setUp(self):
         super().setUp()
-        path = self.project / 'framework-project.json'; config = json.loads(path.read_text())
-        for key in ('pandoc', 'font_en', 'font_ko'):
-            config['reporting'][key] = os.environ['RPF_' + key.upper()]
-        path.write_text(json.dumps(config))
+        create_unit(self.project,'Synthetic evidence',approved_by='Synthetic fixture approval')
+        self.report = sources(self.project)
 
-    def test_real_six_outputs_math_fonts_and_revision_preservation(self):
-        result = render_report(self.project, UNIT_ID, 'REV001')
-        self.assertFalse(result['preview'])
-        self.assertEqual(len(result['files']), 6)
-        for lang in ('en', 'ko'):
-            self.assertIn('math-inline', (self.reports / lang / 'report.html').read_text())
-            self.assertTrue((self.reports / lang / 'report.pdf').read_bytes().startswith(b'%PDF'))
-        old = (self.reports / 'revisions/REV001/en/report.md').read_bytes()
-        sources(self.project, 'REV002', methods_repeat=3)
-        render_report(self.project, UNIT_ID, 'REV002')
-        self.assertEqual((self.reports / 'revisions/REV001/en/report.md').read_bytes(), old)
+    def test_table_only_completed_not_evaluated(self):
+        self.assertTrue(validate_report(self.project,UNIT_ID))
+        self.assertEqual(validate_report(self.project,UNIT_ID)['metadata']['outcome'],'NOT_EVALUATED')
 
-    def test_unsupported_math_and_missing_assets_refuse_outputs(self):
-        for lang in ('en', 'ko'):
-            path = self.reports / lang / 'report.md'; path.write_text(path.read_text() + '\n$\\unsupported{x}$\n')
-        with self.assertRaises(ValidationError): render_report(self.project, UNIT_ID, 'REV001')
-        self.assertFalse((self.reports / 'en/report.pdf').exists())
+    def test_missing_section_or_placeholder_refused(self):
+        p=self.report/'en/report.md';p.write_text(p.read_text().replace('<!-- section: methods -->',''))
+        with self.assertRaisesRegex(ValueError,'eleven'):validate_report(self.project,UNIT_ID)
+        sources(self.project);p.write_text(p.read_text()+'\n{{UNRESOLVED}}\n')
+        with self.assertRaisesRegex(ValueError,'placeholder'):validate_report(self.project,UNIT_ID)
 
-    def test_publication_quality_figure_exports_and_density(self):
-        from report_support import figure
+    def test_numeric_or_metadata_mismatch_refused(self):
+        p=self.report/'ko/report.md';p.write_text(p.read_text().replace('2.5','2.6'))
+        with self.assertRaisesRegex(ValueError,'numeric'):validate_report(self.project,UNIT_ID)
+        sources(self.project);p.write_text(p.read_text().replace('**Status:** COMPLETED','**Status:** WAITING'))
+        with self.assertRaisesRegex(ValueError,'metadata mismatch'):validate_report(self.project,UNIT_ID)
+
+    def test_outcome_reason_and_review_reference_required(self):
+        p=self.report/'report.json';d=json.loads(p.read_text());d['outcome_reason']='';p.write_text(json.dumps(d))
+        with self.assertRaisesRegex(ValueError,'reason'):validate_report(self.project,UNIT_ID)
+        d['outcome_reason']='No scientific verdict';d['review']['references']=[];p.write_text(json.dumps(d))
+        with self.assertRaisesRegex(ValueError,'review references'):validate_report(self.project,UNIT_ID)
+
+    def test_check_is_read_only_and_sources_not_auto_adopted(self):
+        before=contents(self.project)
+        p=subprocess.run([sys.executable,'-B',str(self.project/'tools/build_reports.py'),UNIT_ID,'--check'],cwd='/tmp',capture_output=True)
+        self.assertEqual(p.returncode,0,p.stderr)
+        self.assertEqual(contents(self.project),before)
+
+    def test_no_page_restriction_on_deep_methods(self):
+        sources(self.project,methods_repeat=20)
+        self.assertTrue(validate_report(self.project,UNIT_ID))
+
+
+@unittest.skipUnless(os.environ.get('RPF_RENDER_TESTS')=='1','Optional real renderer acceptance; set RPF_RENDER_TESTS=1')
+class RenderTests(ProjectCase):
+    def setUp(self):
+        super().setUp()
+        create_unit(self.project,'Synthetic evidence',approved_by='Synthetic fixture approval')
+        self.report = sources(self.project)
+        config=self.project/'framework-project.json';value=json.loads(config.read_text())
+        for setting,variable in [('pandoc','RPF_PANDOC'),('font_en','RPF_FONT_EN'),('font_ko','RPF_FONT_KO')]:
+            if os.environ.get(variable):value['reporting'][setting]=os.environ[variable]
+        config.write_text(json.dumps(value))
+
+    def test_six_outputs_revision_history_and_figure_size(self):
         figure(self.project)
-        self.assertEqual(len(validate_report(self.project, UNIT_ID)['figures']), 3)
-        result = render_report(self.project, UNIT_ID, 'REV001')
-        self.assertEqual(len(result['files']), 6)
-        self.assertIn('width:85mm', (self.reports / 'en/report.html').read_text())
+        result=render_report(self.project,UNIT_ID)
+        self.assertEqual(len(result['files']),6)
+        for lang in ['en','ko']:
+            self.assertTrue((self.report/lang/'report.pdf').read_bytes().startswith(b'%PDF'))
+            self.assertIn('width:85mm',(self.report/lang/'report.html').read_text())
+        old=contents(self.report/'revisions/REV001')
+        with self.assertRaisesRegex(ValueError,'already exists'):render_report(self.project,UNIT_ID)
+        sources(self.project,revision='REV002');render_report(self.project,UNIT_ID)
+        self.assertEqual(contents(self.report/'revisions/REV001'),old)
+        self.assertEqual(json.loads((self.report/'current.json').read_text())['revision'],'REV002')
+        self.assertEqual(len(json.loads((self.project/'coordination/plans/ID_REGISTRY.json').read_text())['units']),1)
 
-    def test_missing_font_and_external_or_missing_image_fail_explicitly(self):
-        path = self.project / 'framework-project.json'; config = json.loads(path.read_text())
-        config['reporting']['font_ko'] = None; path.write_text(json.dumps(config))
-        with self.assertRaises(ValidationError): render_report(self.project, UNIT_ID, 'REV001')
-        self.assertFalse((self.reports / 'en/report.pdf').exists())
+    def test_missing_font_has_no_published_outputs(self):
+        p=self.project/'framework-project.json';d=json.loads(p.read_text());d['reporting']['font_ko']=str(self.root/'missing.ttf');p.write_text(json.dumps(d))
+        with self.assertRaisesRegex(ValueError,'font'):render_report(self.project,UNIT_ID)
+        self.assertFalse((self.report/'revisions').exists())
 
-    def test_remote_and_missing_image_assets_are_not_fetched(self):
-        for location in ('https://synthetic.invalid/figure.png', '../../../analyses/missing.png'):
-            sources(self.project)
-            for lang in ('en', 'ko'):
-                path = self.reports / lang / 'report.md'; path.write_text(path.read_text()+'\n![Synthetic image]('+location+')\n')
-            with self.assertRaises(ValidationError): render_report(self.project, UNIT_ID, 'REV001')
-            self.assertFalse((self.reports / 'en/report.pdf').exists())
+    def test_preview_isolated_from_final_revisions(self):
+        result=render_report(self.project,UNIT_ID,preview=True)
+        self.assertTrue(result['preview']);self.assertIn('/previews/',result['revision_directory'])
+        self.assertFalse((self.report/'en/report.pdf').exists())
+        self.assertFalse((self.report/'revisions').exists())
 
-    def test_low_density_export_is_rejected(self):
-        from report_support import figure
+    def test_unsupported_math_and_raw_html_refused(self):
+        p=self.report/'en/report.md';p.write_text(p.read_text()+'\n$\\unsupportedcommand{x}$\n')
+        with self.assertRaisesRegex(ValueError,'Unsupported mathematical'):render_report(self.project,UNIT_ID)
+        sources(self.project);p.write_text(p.read_text()+'\n<script>alert("synthetic")</script>\n')
+        with self.assertRaisesRegex(ValueError,'Raw HTML'):render_report(self.project,UNIT_ID)
+        self.assertFalse((self.report/'revisions').exists())
+
+    def test_low_dpi_image_refused(self):
+        figure(self.project)
         from PIL import Image
-        figure(self.project)
-        path = self.project / 'analyses' / UNIT_ID / 'figures/synthetic.png'
-        with Image.open(path) as image: image.save(path.with_name('low.png'), dpi=(72,72))
-        path.write_bytes(path.with_name('low.png').read_bytes())
-        with self.assertRaises(ValidationError): validate_report(self.project, UNIT_ID)
+        p=self.project/'analyses'/UNIT_ID/'figures/synthetic.png'
+        with Image.open(p) as image:image.save(p.with_name('low.png'),dpi=(100,100))
+        p.write_bytes(p.with_name('low.png').read_bytes())
+        with self.assertRaisesRegex(ValueError,'600 dpi'):validate_report(self.project,UNIT_ID)
 
-    def test_independent_git_source_and_large_input_links_are_metadata_only(self):
-        repo = self.project / 'repos/synthetic-source'; (repo / '.git').mkdir(parents=True)
-        (repo / '.git/HEAD').write_text('ref: refs/heads/synthetic\n')
-        (repo / 'analysis.py').write_text('# Synthetic source reference; not executed.\n')
-        data = self.project / 'data/large-synthetic.bin'
-        with data.open('wb') as handle: handle.truncate(128 * 1024 * 1024)
-        for lang in ('en', 'ko'):
-            path = self.reports / lang / 'report.md'
-            path.write_text(path.read_text() + '\n[Illustrative source, not executed](../../../repos/synthetic-source/analysis.py)\n\n[Unexamined synthetic input reference](../../../data/large-synthetic.bin)\n')
-        result = render_report(self.project, UNIT_ID, 'REV001')
-        self.assertEqual(len(result['files']), 6)
-        self.assertEqual((repo / '.git/HEAD').read_text(), 'ref: refs/heads/synthetic\n')
-
-    def test_interrupted_build_can_be_recovered_without_later_work(self):
-        from research_program_framework.reports import report_recovery_plan, recover_report
-        def fail(event, index=None):
-            if event == 'published' and index == 1: raise KeyboardInterrupt()
-        with patch('research_program_framework.reports._checkpoint', fail):
-            with self.assertRaises(KeyboardInterrupt): render_report(self.project, UNIT_ID, 'REV001')
-        operation = next((self.project / '.research-framework/report-builds').iterdir()).name
-        plan = report_recovery_plan(self.project, operation)
-        self.assertEqual(recover_report(self.project, operation, plan['plan_digest'])['status'], 'ROLLED_BACK')
-        self.assertFalse((self.reports / 'en/report.pdf').exists())
-
-    def test_interrupted_output_publication_and_guarded_undo(self):
-        from research_program_framework.reports import report_recovery_plan, recover_report
-        def fail(event, index=None):
-            if event == 'published' and index == 1: raise KeyboardInterrupt()
-        with patch('research_program_framework.reports._checkpoint', fail):
-            with self.assertRaises(KeyboardInterrupt): render_report(self.project, UNIT_ID, 'REV001')
-        operation = next((self.project / '.research-framework/report-builds').iterdir()).name
-        target = self.reports / 'en/report.html'; original = target.read_bytes()
-        target.write_bytes(original + b'local work')
-        with self.assertRaises(ValidationError): report_recovery_plan(self.project, operation)
-        # A separate interrupted build without later work is recoverable.
-        target.write_bytes(original)
-        # Rewriting even identical content counts as later work and stays guarded.
-        with self.assertRaises(ValidationError): report_recovery_plan(self.project, operation)
+    def test_unarchived_local_output_preserved(self):
+        render_report(self.project,UNIT_ID)
+        output=self.report/'en/report.pdf';output.write_bytes(output.read_bytes()+b'\nSynthetic local annotation\n')
+        local=output.read_bytes();sources(self.project,revision='REV002')
+        with self.assertRaisesRegex(ValueError,'unarchived local changes'):render_report(self.project,UNIT_ID)
+        self.assertEqual(output.read_bytes(),local)
+        self.assertFalse((self.report/'revisions/REV002').exists())
