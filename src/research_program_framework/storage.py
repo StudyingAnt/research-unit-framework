@@ -206,12 +206,15 @@ class Store:
             raise ValidationError(f'Stale or locally modified target: {path}')
 
     def _check_root(self):
-        if not hasattr(self, 'lock_identity'):
+        if not hasattr(self, 'lock_identity') and not hasattr(self, 'bootstrap_identity'):
             raise ValidationError('Mutation requires the registered-installation lock')
         with paths._open_root(self.root) as fd:
             if identity(os.fstat(fd)) != self.identity:
                 raise ValidationError('Project root identity changed')
-        if self.directory('.research-framework') != self.lock_identity:
+        if hasattr(self, 'bootstrap_identity'):
+            if self.identity != self.bootstrap_identity:
+                raise ValidationError('Bootstrap root changed')
+        elif self.directory('.research-framework') != self.lock_identity:
             raise ValidationError('Locked installation directory identity changed')
 
     def publish(self, source, target, expected, source_expected):
@@ -254,6 +257,22 @@ class Store:
         with self.parent(path) as (fd, name):
             os.rmdir(name, dir_fd=fd)
             os.fsync(fd)
+
+    @contextmanager
+    def bootstrap_lock(self):
+        """Root lock for metadata-free adoption and its external recovery store."""
+        if hasattr(self, 'lock_identity') or hasattr(self, 'bootstrap_identity'):
+            raise ValidationError('Store is already locked')
+        try:
+            fcntl.flock(self.fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except BlockingIOError as exc:
+            raise ValidationError('Another adoption operation holds the root lock') from exc
+        self.bootstrap_identity = self.identity
+        try:
+            yield
+        finally:
+            del self.bootstrap_identity
+            fcntl.flock(self.fd, fcntl.LOCK_UN)
 
     @contextmanager
     def lock(self):

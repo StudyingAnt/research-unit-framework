@@ -15,6 +15,7 @@ from .paths import ValidationError
 from .release import build, materialize, source_bundle, runtime
 from .updates import plan_update
 from .transactions import apply_update, apply_rollback, plan_rollback, plan_recovery
+from .migration import plan_migration, apply_migration, plan_migration_rollback, rollback_migration
 
 
 @contextmanager
@@ -52,6 +53,17 @@ def parser():
         rollback = sub.add_parser(command)
         rollback.add_argument('project'); rollback.add_argument('operation')
         if command in ('rollback', 'recover'): rollback.add_argument('--plan-digest', required=True)
+    for command in ('migrate-plan', 'migrate'):
+        migration = sub.add_parser(command)
+        migration.add_argument('project'); migration.add_argument('--release', required=True)
+        migration.add_argument('--bridge-policy-reviewed', action='store_true')
+        migration.add_argument('--keep-local', action='append', default=[], help='Explicitly retain a recognized legacy managed file')
+        if command == 'migrate':
+            migration.add_argument('--plan-digest', required=True)
+            migration.add_argument('--backup-root', required=True, help='Existing external private directory')
+    for command in ('migration-rollback-plan', 'migration-rollback'):
+        recovery = sub.add_parser(command); recovery.add_argument('backup_directory')
+        if command == 'migration-rollback': recovery.add_argument('--plan-digest', required=True)
     return result
 
 
@@ -70,6 +82,25 @@ def main(argv=None):
                 else:
                     if plan.digest != args.plan_digest: raise ValidationError('Plan digest changed; review a fresh plan')
                     result = apply_update(plan)
+        elif args.command in ('migrate-plan', 'migrate'):
+            import base64
+            # The selected release runtime owns the exact, inert legacy ancestor.
+            if str(sys.argv[0]).endswith('.pyz'):
+                bundle = json.loads(importlib.resources.files(__package__).joinpath('bundle.json').read_text())
+            else:
+                bundle = source_bundle(Path(__file__).resolve().parents[2])
+            legacy_files = {p: base64.b64decode(data, validate=True) for p, data in bundle['legacy_files'].items()}
+            with selected_release(args.release) as (payload, release):
+                plan = plan_migration(args.project, payload, release, bundle['legacy_manifest'], legacy_files,
+                                      {p: None for p in args.keep_local}, args.bridge_policy_reviewed)
+                if args.command == 'migrate-plan': result = plan.describe()
+                else:
+                    if plan.digest != args.plan_digest: raise ValidationError('Migration plan changed')
+                    result = apply_migration(plan, args.backup_root)
+        elif args.command == 'migration-rollback-plan':
+            result = plan_migration_rollback(args.backup_directory)
+        elif args.command == 'migration-rollback':
+            result = rollback_migration(args.backup_directory, args.plan_digest)
         else:
             plan = (plan_recovery if args.command.startswith('recover') else plan_rollback)(args.project, args.operation)
             if args.command.endswith('-plan'):
