@@ -1,5 +1,8 @@
 # Research Program Framework
 
+**Language:** English | [한국어](README.ko.md)  
+**Explore:** [Project template](template/) · [Design philosophy (English)](docs/PHILOSOPHY.md) · [설계 철학 (한국어)](docs/PHILOSOPHY.ko.md)
+
 A lightweight template for researcher-directed life-science projects. Browse
 [`template/`](template/) to see the project you will get: Markdown operating
 instructions, Coordination plans, stable Aim/Strategy/Tactic (AST) work, detailed
