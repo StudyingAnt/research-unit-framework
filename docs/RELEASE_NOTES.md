@@ -4,6 +4,11 @@ This implementation supports researcher-directed life-science program records,
 Detailed EN/KO reporting and guarded framework administration. The scientific
 specification is v1.1; the implementation and JSON schema versions are separate.
 
+Implementation 1.1.1 corrects font-presence diagnostics for project-relative
+configured paths when invoked outside the project. Rendering, scientific
+requirements and safe administration remain unchanged from 1.1.0. The published
+1.1.0 tag and artifacts are retained.
+
 Download the release archive and its SHA-256 file. Verify the checksum before
 extracting the trusted archive, inspect `SHA256SUMS`, and keep the release
 directory for update planning. Python 3.9+ on Linux/WSL is required for core

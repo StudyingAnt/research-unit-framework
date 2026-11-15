@@ -5,7 +5,7 @@ import importlib.metadata
 from pathlib import Path
 import shutil
 
-from .paths import ValidationError
+from .paths import ValidationError, validate_relative_path
 from .records import configuration, read_registry
 from .storage import Store
 from .updates import read_receipt, project_owners
@@ -41,10 +41,21 @@ def inspect_project(project):
 def doctor(project):
     with Store(project) as store:
         config = configuration(store).get('reporting', {})
+        fonts = {}
+        for lang in ('en', 'ko'):
+            location = config.get('font_' + lang)
+            if not location:
+                fonts[lang] = False
+                continue
+            path = Path(location)
+            if not path.is_absolute():
+                validate_relative_path(location)
+                path = store.root / path
+            fonts[lang] = path.is_file()
         versions = {}
         for name in ('weasyprint', 'matplotlib', 'Pillow', 'fonttools'):
             try: versions[name] = importlib.metadata.version(name)
             except importlib.metadata.PackageNotFoundError: versions[name] = None
         return {'pandoc': shutil.which(config.get('pandoc', 'pandoc')), 'optional_dependencies': versions,
-                'font_files_present': {lang: bool(config.get('font_' + lang) and Path(config['font_' + lang]).is_file()) for lang in ('en', 'ko')},
+                'font_files_present': fonts,
                 'environment_modified': False, 'remote_access_attempted': False}

@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.1.1
+
+- Resolve project-relative configured font files against the selected project in
+  diagnostics, matching the renderer even when invoked from another directory.
+- Add a regression test without changing project configuration or environments.
+- Preserve the published 1.1.0 source/tag and all scientific/administrative contracts.
+
 ## 1.1.0
 
 Validated from the local 1.1.0-rc.1 development candidate.
