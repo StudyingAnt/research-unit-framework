@@ -19,6 +19,10 @@ The release also includes the previously committed EN/KO philosophy documents
 and optional scientific-critical-thinking skill guidance. That skill remains
 optional; no skill, environment or dependency is installed by an update.
 
+Release CI is pinned to Ubuntu 22.04 after an observed Python 3.9 setup failure
+on the Ubuntu 26.04 image selected by ubuntu-latest. The Python 3.9/3.11 support
+matrix is retained. This changes hosted CI only, not any project's environment.
+
 This release does not split existing Aims, renumber identities, rewrite approved
 plans or regenerate reports. Tactic-level eleven-section EN/KO reporting,
 immutable report revisions, optional Runs and many-to-many links remain intact.

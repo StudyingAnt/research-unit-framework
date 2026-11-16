@@ -69,6 +69,11 @@ that remains a researcher-reviewed planning decision. Version-transition tests
 use an explicitly synthetic 2.0.0 starting number, independent of the current
 release, rather than retaining a legacy baseline in the repository.
 
+The first remote run stopped before testing: ubuntu-latest selected Ubuntu 26.04,
+where setup-python could not provide Python 3.9. The CI-only runner was pinned to
+Ubuntu 22.04 after checking the [official Python build manifest](https://github.com/actions/python-versions/blob/main/versions-manifest.json)
+for the existing Python 3.9/3.11 matrix. Project environments are unchanged.
+
 ### Archive and publication
 
 CI exercises Python 3.9 and 3.11, candidate privacy checks, clean committed-tree
