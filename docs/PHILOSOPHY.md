@@ -25,7 +25,7 @@ The framework separates complementary levels of scientific work:
 |---|---|
 | **Research Narrative / Research Map** | The broad problem, questions, competing explanations, gaps, and evolving synthesis |
 | **Workstream** | A sustained line of scientific investigation, not necessarily an assay, technology, dataset, or code repository |
-| **Aim** | A meaningful scientific objective |
+| **Aim** | One specific scientific question or bounded enabling objective |
 | **Strategy** | An overall approach to that Aim |
 | **Tactic** | A bounded task producing one coherent package of interpretable evidence |
 | **Specifications** | Material protocols, inputs, comparisons, measurements, parameters, QC, and evaluation criteria |
@@ -35,6 +35,14 @@ The framework separates complementary levels of scientific work:
 These are **conceptual responsibilities**, not an inflexible folder tree. Workstreams and Aims can connect many-to-many. One Tactic may contribute to multiple manuscripts or none. A manuscript is not the parent of the scientific program: research should not be retrospectively forced into a predetermined story.
 
 A Tactic is normally the smallest scientific reporting unit, but it need not equal a single script, figure, or execution. Multiple controls, replicates, and runs may belong to one bounded question.
+
+An Aim normally has the scope of a coherent results paragraph or related evidence
+set, typically below a manuscript Results subsection; this is a scope heuristic,
+not a publication format or count requirement. Dataset construction can be a
+bounded enabling Aim. One or several Strategies and Tactics are valid, and the
+researcher may choose broader scope with a rationale and completion boundary.
+See the [operational Aim guidance](../template/AGENTS.md#aim-scope) and
+[synthetic examples](RESEARCH_PROGRAM_FRAMEWORK_v1.1.md#23-aim-strategy-tactic-ast).
 
 ## 4. Coordination and AST sessions communicate through files
 

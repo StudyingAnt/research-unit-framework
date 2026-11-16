@@ -41,6 +41,36 @@ No dependencies are installed by the framework helpers.
 
 ## Release checks
 
+### 2.0.1 Aim-guidance hotfix
+
+The hotfix changes only three installed managed texts: AGENTS.md,
+coordination/COORDINATION.md and templates/aim.md. Runtime scripts, the managed
+allowlist, report templates/CSS and metadata format remain unchanged. EN/KO design
+and philosophy were reviewed for corresponding default scope, researcher-chosen
+broader Aims, enabling objectives, flexible composition and preservation of
+scientific identity/reporting.
+
+Synthetic acceptance used the exact published 2.0.0 Git template as an ephemeral
+ancestor. Linux tar extraction and the checkout had matching permissions; the
+preview also exposed mode-only changes when a different extraction convention
+was tested. The [project update guide](UPDATE_2.0.1.md) explains that distinction.
+The checks passed for current new-project propagation, one Strategy/Tactic and
+multiple Strategies/Tactics, enabling-work draft creation without an invented
+hypothesis, and optional Runs remaining optional. A 2.0.0-to-2.0.1 update preserved
+local review/context additions, project settings, scientific records, stable IDs
+and archived reports byte-for-byte. The three affected originals were verified
+in backups; repeat preview had no further content changes. An intentionally
+overlapping local scope addition blocked all writes, then accepted explicit
+merged bytes. No actual research project was updated.
+
+These observations validate propagation and administrative behavior. They do not
+establish the quality or consistency of an assistant's scientific scope choices;
+that remains a researcher-reviewed planning decision. Version-transition tests
+use an explicitly synthetic 2.0.0 starting number, independent of the current
+release, rather than retaining a legacy baseline in the repository.
+
+### Archive and publication
+
 CI exercises Python 3.9 and 3.11, candidate privacy checks, clean committed-tree
 packaging and archive-only project/AST creation. Tag publication depends on these
 checks and never replaces an existing release. The source archive is browsable

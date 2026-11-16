@@ -26,7 +26,11 @@ class ProjectCase(unittest.TestCase):
         self.source = self.root / 'source'
         self.source.mkdir()
         shutil.copytree(ROOT / 'template', self.source / 'template', ignore=shutil.ignore_patterns('__pycache__'))
-        shutil.copyfile(ROOT / 'template-manifest.json', self.source / 'template-manifest.json')
+        # Version-transition tests start at a fixed synthetic version, independent
+        # of the current release number. This is not a historical template copy.
+        manifest = json.loads((ROOT / 'template-manifest.json').read_text())
+        manifest['version'] = '2.0.0'
+        (self.source / 'template-manifest.json').write_bytes(encode(manifest))
         self.project = self.root / 'project'
         create_project(self.project, self.source)
 

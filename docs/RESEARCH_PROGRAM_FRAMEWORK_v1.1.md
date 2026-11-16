@@ -37,7 +37,7 @@ The framework distinguishes **scientific direction**, **organized lines of inves
 |---|---|---|---|
 | **Research Narrative (N)** | What broad scientific problem motivates the program, and which explanations remain plausible? | `coordination/plans/RESEARCH_MAP.md` | Researcher/team |
 | **Workstream (W)** | Which sustained line of investigation contributes evidence or capability toward that problem? | Research map; optional `workstreams/W##.md` | Researcher/team |
-| **Aim (A)** | What meaningful, specific scientific question or objective is being pursued? | `coordination/plans/A###.md` | Researcher/team |
+| **Aim (A)** | What specific scientific question or bounded enabling objective is being pursued? | `coordination/plans/A###.md` | Researcher/team |
 | **Strategy (S)** | What general experimental, computational, theoretical, or integrative approach could address the Aim? | Aim plan | Researcher approves |
 | **Tactic (T)** | What bounded operation or analysis will produce a specific interpretable evidence package? | One research-unit report | Researcher approves |
 | **Specifications** | Which protocols, inputs, controls, parameters, measurements, and acceptance criteria govern the work? | Approved unit plan; protocols/configuration | Researcher approves consequential choices |
@@ -97,9 +97,30 @@ Record, when relevant: purpose; principal questions; included methods or data cl
 
 The **AST hierarchy** translates scientific motivation into concrete work:
 
-- **Aim (A):** one meaningful scientific objective, ordinarily expressible as a single sentence.
+- **Aim (A):** one specific scientific question or bounded enabling objective, ordinarily expressible as a single sentence.
 - **Strategy (S):** the general approach selected to address that Aim. One Aim may support different strategies, such as experimental intervention, observational comparison, or mechanistic modeling.
 - **Tactic (T):** a bounded experimental or analytical operation, with an explicit question, specifications, and one coherent evidence package.
+
+**Default Aim granularity:** A one-sentence objective still needs an explicit
+scope and completion boundary. As a heuristic, an Aim should be explainable
+through one coherent results paragraph, several related panels, or a related
+main/extended evidence set, typically below a manuscript Results subsection.
+This is not a publication-format requirement, figure/panel count or report-length
+limit, and does not prescribe a positive finding. An Aim may use one or several
+Strategies; each Strategy may use one or several Tactics. One of each is valid;
+do not multiply entries simply to populate the hierarchy. The researcher may
+choose a broader Aim with a rationale and completion boundary. Manuscript layout
+must not determine or renumber scientific identity. Existing Aims and plans are
+not automatically split or rewritten. The project-level operational rule is in
+[Aim scope guidance](../template/AGENTS.md#aim-scope).
+
+The following are synthetic scope examples, not adopted research plans:
+
+| Scope | Example and treatment |
+|---|---|
+| Broad theme | Characterize system composition and heterogeneity across conditions. Discuss narrower questions or a justified broader Aim with the researcher. |
+| Bounded scientific Aim | Determine whether condition X changes the proportion of state Y at endpoint Z. Define the comparison, inference and completion boundary without presuming its result. |
+| Bounded enabling Aim | Generate a defined paired-assay dataset and establish its quality and inclusion boundaries. Specify inputs, outputs, quality assessment and completion boundaries; no biological hypothesis verdict is required. |
 
 **The Tactic is the smallest normal reporting unit.** It may include several controls, samples, replicates, time points, calculations, or runs, provided they collectively answer the same bounded question. It need not always yield a publishable result: a well-documented negative, null, infeasible, or inconclusive outcome may still complete a useful research unit.
 

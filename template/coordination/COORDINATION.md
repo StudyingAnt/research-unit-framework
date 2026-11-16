@@ -13,6 +13,11 @@ plans; help me examine the current questions, evidence and priorities.”
    Distinguish observation, inference, alternative and synthesis.
 4. Propose Narrative, Workstream, Aim, priority or manuscript changes. Workstreams
    are flexible scientific purposes, not a compulsory technology taxonomy.
+   Apply the [Aim scope guidance](../AGENTS.md#aim-scope) when discussing Aims;
+   ask for the specific question or bounded enabling objective and its completion
+   boundary. Discuss splitting a broad theme into narrower Aims without adopting
+   a split automatically. One or several Strategies/Tactics are valid; do not
+   manufacture extra work or let manuscript layout determine scientific identity.
 5. Adopt only the decisions the researcher explicitly accepts. Update the
    appropriate map, Aim or manuscript record with date, approval reference,
    rationale, affected links and remaining uncertainties. Leave other ideas in

@@ -40,6 +40,23 @@ for a substantively distinct evidence-producing task; repeat executions may be
 optional `R###` Runs within the same Tactic. Report revisions use `REV###`.
 Never recycle registered or retired IDs or use manuscript mappings to renumber.
 
+### Aim scope
+
+An Aim normally addresses one specific scientific question or a bounded enabling
+objective. As a scope heuristic, it should be explainable through one coherent
+results paragraph, several related panels, or a related main/extended evidence
+set, typically below a manuscript Results subsection. These examples describe
+scientific granularity, not publication-format requirements, panel counts or
+report-length limits. State the scope and completion boundary without assuming
+a positive finding. Dataset construction or methodological qualification can be
+an Aim without inventing a biological hypothesis.
+
+An Aim may use one or several Strategies, and each Strategy may use one or several
+Tactics. Do not multiply hierarchy entries merely to fill the structure. The
+researcher may choose a broader Aim with an explicit rationale and completion
+boundary. Manuscript layout does not determine or renumber scientific identity.
+Do not automatically split existing Aims or rewrite approved plans.
+
 Use `tools/new_unit.py` for scoped ID/folder/draft administration after approval.
 It does not approve unfilled Methods or execute science. Preserve approved plans
 and prior report revisions. At completion, present findings and stop; a useful
