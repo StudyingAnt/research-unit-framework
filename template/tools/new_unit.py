@@ -72,7 +72,12 @@ def create_unit(project, title, aim='A001', strategy='S01', approved_by='', unit
             'Scientific plan: DRAFT. Creation approval does not approve unfilled methods or specifications.\n\n'
             'Record Motivation, Aim, Strategy, the bounded Tactic question, material Specifications,\n'
             'expected evidence and explicit scientific approval here or link the approved Aim plan.\n'
-            'Keep approved versions and explain consequential changes before execution.\n').encode())
+            'Keep approved versions and explain consequential changes before execution.\n\n'
+            '## Execution and resources (when applicable)\n\n'
+            '- [ ] Each resource and scheduling value (CPU, memory, time, partition, array throttle) '
+            'has a source: workload estimate, verified site policy, or an explicit reproducibility reason.\n\n'
+            'For arrays, record task count, chosen concurrency and the reason for any throttle; '
+            'follow docs/hpc.md and reference applicable dated site facts in PROJECT_INSTRUCTIONS.md.\n').encode())
         before = read(project, REGISTRY)
         registry['units'][unit_id]['state'] = 'active'
         write(project, REGISTRY, encode(registry), expected=before, replace=True)

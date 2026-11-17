@@ -74,6 +74,24 @@ where setup-python could not provide Python 3.9. The CI-only runner was pinned t
 Ubuntu 22.04 after checking the [official Python build manifest](https://github.com/actions/python-versions/blob/main/versions-manifest.json)
 for the existing Python 3.9/3.11 matrix. Project environments are unchanged.
 
+### 2.0.2 HPC resource-rationale hotfix
+
+Synthetic acceptance used the exact v2.0.1 template as an ephemeral ancestor.
+With matching file permissions, the update changes exactly AGENTS.md, docs/hpc.md
+and tools/new_unit.py. Local policy additions survive three-way merging; dated
+site facts, project settings, existing plans, scientific files, report revisions
+and independent repositories remain byte-identical. All three affected originals
+are verified in backups, a conflicting policy edit blocks all writes, and a
+repeat preview makes no further changes. New projects receive the site-fact seed;
+existing instructions are never replaced. Future AST drafts receive the resource
+checklist while existing plans remain untouched.
+
+The Slurm examples were checked against official field/limit documentation and
+passed shell syntax validation only. No Slurm command, remote connection or real
+project update was executed. The complete renderer-enabled suite still passes
+all 44 tests; these checks cannot verify actual site policy, workload demand or
+the adequacy of an assistant's resource rationale.
+
 ### Archive and publication
 
 CI exercises Python 3.9 and 3.11, candidate privacy checks, clean committed-tree

@@ -95,6 +95,9 @@ Read `docs/hpc.md` and verified project settings before remote-work instructions
 The human runs remote pull, submission, monitoring and transfer commands. Keep
 login-node submission separate from compute-job environment initialization.
 Never assume site modules, paths, access, job IDs or successful execution.
+Use the resource-rationale and independent-array defaults in `docs/hpc.md` when
+planning execution. Reuse applicable dated site facts in PROJECT_INSTRUCTIONS.md;
+reference/example scheduling values need a reason, not automatic adoption.
 
 Framework updates affect reusable policies/templates/tools, never scientific
 records. Preserve project-specific settings and local edits. A template change

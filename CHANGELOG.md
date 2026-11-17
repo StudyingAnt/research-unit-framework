@@ -1,5 +1,17 @@
 # Changes
 
+## 2.0.2
+
+Require a reason/source for HPC resource and scheduling values rather than copying
+reference defaults. Independent arrays default to no explicit concurrency cap;
+any lower cap is justified in the AST plan. Reuse dated project scheduling-limit
+facts, with read-only Slurm query examples and explicit limits on interpretation.
+New unit plans include an execution/resource checklist. Existing projects update
+AGENTS.md, docs/hpc.md and tools/new_unit.py; project-owned site facts and existing
+plans require scoped local recording, never an automatic rewrite.
+See [release notes](docs/RELEASE_NOTES.md) and
+[downstream adoption](docs/UPDATE_2.0.2.md).
+
 ## 2.0.1
 
 Clarify default Aim granularity, bounded enabling objectives and flexible

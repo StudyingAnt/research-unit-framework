@@ -1,39 +1,31 @@
-# Research Program Framework 2.0.1
+# Research Program Framework 2.0.2
 
-Policy/template hotfix: clarify Aim granularity without changing the runtime,
-metadata format, stable IDs or scientific reporting contract.
+HPC planning-policy hotfix: justify resource and scheduling choices instead of
+inheriting defaults from reference repositories, wrappers or example configs.
 
-- An Aim normally addresses one specific scientific question or bounded enabling
-  objective, with an explicit scope and completion boundary.
-- A coherent results paragraph, related panels or main/extended evidence set is
-  a scope heuristic, typically below a Results subsection. It is not a required
-  publication format, panel count, report-length limit or predetermined finding.
-- An Aim may use one or several Strategies; each Strategy may use one or several
-  Tactics. One of each is valid. Broader Aims remain researcher decisions.
-- Dataset construction and methodological qualification may be enabling Aims
-  without inventing biological hypotheses.
-- Updated installed AGENTS.md, coordination/COORDINATION.md and templates/aim.md;
-  aligned EN/KO scientific specifications and philosophy with synthetic examples.
+- Require a source and reason for CPU, memory, time, partition and concurrency
+  choices. Separate scientific reproducibility from operational scheduling and
+  explain cases where allocations or platforms affect the result.
+- Independent arrays default to no explicit `%N` concurrency cap (equivalent to
+  the task count). A lower cap needs an identified constraint or an explicit
+  validation reason recorded in the AST plan. This is not a promise of concurrent
+  starts or permission to ignore site/storage/tool constraints.
+- Verify scheduling-limit facts once per applicable project scope, with date,
+  source, returned evidence and coverage gaps in PROJECT_INSTRUCTIONS.md. Reuse
+  them across ASTs until potentially stale. Read-only Slurm query examples cover
+  associations, QOS and array configuration; missing fields are not proof of no
+  limits. MaxArraySize is separate from concurrent-running-task limits.
+- New AST draft plans include one execution/resource checklist item. No Slurm
+  launcher, remote connection, submission service or semantic validator is added.
 
-The release also includes the previously committed EN/KO philosophy documents
-and optional scientific-critical-thinking skill guidance. That skill remains
-optional; no skill, environment or dependency is installed by an update.
+Downstream managed updates are AGENTS.md, docs/hpc.md and tools/new_unit.py.
+The PROJECT_INSTRUCTIONS.md seed gains a site-fact prompt for new projects only;
+existing project instructions remain project-owned and are never overwritten.
+Record actual facts locally only after verified human-returned evidence. Existing
+AST plans/reports, identities, analyses, code and environments are not rewritten.
+See [the project update note](UPDATE_2.0.2.md).
 
-Release CI is pinned to Ubuntu 22.04 after an observed Python 3.9 setup failure
-on the Ubuntu 26.04 image selected by ubuntu-latest. The Python 3.9/3.11 support
-matrix is retained. This changes hosted CI only, not any project's environment.
-
-This release does not split existing Aims, renumber identities, rewrite approved
-plans or regenerate reports. Tactic-level eleven-section EN/KO reporting,
-immutable report revisions, optional Runs and many-to-many links remain intact.
-There are no report page-count limits. No runtime or schema mechanism was added.
-
-Projects created from the 2.x baseline can preview/apply this hotfix using the
-existing updater. Only three managed files differ from the published 2.0.0
-template; local additions are preserved or conflicts stop the whole application.
-Source-only documentation is not copied into existing scientific projects.
-Follow [the project update instructions](UPDATE_2.0.1.md).
-
-1.x/v0.5 installations are outside this updater's scope. Prior releases remain
-available. Project-owned plans, settings, scientific source, analyses and reports
-are preserved. The assessed research project has not been updated by this release.
+The 2.x update format and managed allowlist are unchanged. Use the existing
+preview/merge/backup mechanism. Human-operated HPC, login/compute environment
+separation and detailed bilingual reporting remain intact. No actual cluster
+policy or execution has been verified by the framework's synthetic tests.
